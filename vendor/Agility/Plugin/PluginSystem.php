@@ -21,7 +21,7 @@ namespace Agility\Plugin;
 
 			}
 			else {
-				\Agility\Logging\Logger::log("Plugin load error: plugin loader not found at path '$path'. Plugin will be skipped.", Agiltiy\Logging\Severity::Notice);
+				\Agility\Logging\Logger::log("Plugin load error: plugin loader not found at path '$path'. Plugin will be skipped.", \Agility\Logging\Severity::Notice);
 			}
 
 		}
@@ -37,9 +37,9 @@ namespace Agility\Plugin;
 
 		private static function setupPlugin($pluginName) {
 
-			if (!class_exists($pluginName, false)) {
+			if (!class_exists($pluginName, false) || get_parent_class($pluginName) !== "Agility\Plugin\Plugin") {
 
-				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", Agiltiy\Logging\Severity::Warning);
+				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", \Agility\Logging\Severity::Warning);
 				return;
 
 			}
@@ -49,7 +49,7 @@ namespace Agility\Plugin;
 			}
 			catch (Exception $e) {
 
-				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", Agiltiy\Logging\Severity::Warning);
+				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", \Agility\Logging\Severity::Warning);
 				return;
 
 			}

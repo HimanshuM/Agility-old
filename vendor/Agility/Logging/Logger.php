@@ -14,7 +14,7 @@ namespace Agility\Logging;
 
 			if (empty(self::$loggers)) {
 
-				echo $msg;
+				error_log($msg);
 				return;
 
 			}

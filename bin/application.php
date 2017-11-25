@@ -6,6 +6,8 @@
 
 			parent::__construct();
 
+			$this->initialize();
+
 		}
 
 	}

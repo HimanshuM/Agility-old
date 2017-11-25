@@ -1,12 +1,17 @@
 <?php
 
+use \Agility\Plugin\Plugin;
 use \Agility\Logging;
 use \Agility\Logging\Severity;
 
-	class Logger implements Logging\ILogger {
+	class Logger extends Plugin implements Logging\ILogger {
 
 		function __construct() {
+
+			parent::__construct();
+
 			Logging\Logger::registerLogger($this);
+
 		}
 
 		function log($msg, $severity = Severity::Log) {

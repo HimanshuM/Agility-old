@@ -7,26 +7,29 @@ namespace Agility;
 		protected $environment;
 
 		protected $applicationDir;
+		protected $documentRoot;
 		protected $filePaths;
 		protected $cliOnlyApp;
 
 		protected $settings;
 
 		function __construct() {
-			$this->initialize();
+
+			$this->setEnvironment();
+
+			$this->setApplicationDirectory();
+
+			$this->setFilePaths();
+
+			$this->cliOnlyApp = false;
+
 		}
 
 		function run() {
 			Logging\Logger::log("Yay!!");
 		}
 
-		private function initialize() {
-
-			$this->setEnvironment();
-
-			$this->setDocumentRoot();
-
-			$this->setFilePaths();
+		protected function initialize() {
 
 			$this->setupDatabase();
 
@@ -61,9 +64,10 @@ namespace Agility;
 
 		}
 
-		private function setDocumentRoot() {
+		private function setApplicationDirectory() {
 
-			$documentRoot = explode("/", str_replace("\\", "/", getcwd()));
+			$this->documentRoot = getcwd();
+			$documentRoot = explode("/", str_replace("\\", "/", $this->documentRoot));
 			unset($documentRoot[count($documentRoot) - 1]);
 			$this->applicationDir = implode("/", $documentRoot);
 
