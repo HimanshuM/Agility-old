@@ -10,11 +10,11 @@ namespace Agility\Logging;
 			self::$loggers[] = $logger;
 		}
 
-		static function log($msg, $severity = Severity::Log) {
+		static function log($msg, $severity = Severity::Info) {
 
 			if (empty(self::$loggers)) {
 
-				error_log($msg);
+				error_log($severity.": ".$msg);
 				return;
 
 			}

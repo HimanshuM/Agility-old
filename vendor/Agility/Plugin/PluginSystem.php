@@ -4,7 +4,17 @@ namespace Agility\Plugin;
 
 	class PluginSystem {
 
+		public static $environment;
 		public static $plugins = [];
+
+		static function setup($location) {
+
+			$pluginDirs = glob($location."/*", GLOB_ONLYDIR);
+			foreach ($pluginDirs as $plugin) {
+				self::loadPlugin($plugin);
+			}
+
+		}
 
 		static function loadPlugin($path) {
 
@@ -26,15 +36,6 @@ namespace Agility\Plugin;
 
 		}
 
-		static function setup($location) {
-
-			$pluginDirs = glob($location."/*", GLOB_ONLYDIR);
-			foreach ($pluginDirs as $plugin) {
-				self::loadPlugin($plugin);
-			}
-
-		}
-
 		private static function setupPlugin($pluginName) {
 
 			if (!class_exists($pluginName, false) || get_parent_class($pluginName) !== "Agility\Plugin\Plugin") {
@@ -45,7 +46,7 @@ namespace Agility\Plugin;
 			}
 
 			try {
-				$pluginObject = new $pluginName;
+				$pluginObject = new $pluginName(self::$environment);
 			}
 			catch (Exception $e) {
 

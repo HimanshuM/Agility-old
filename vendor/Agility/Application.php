@@ -9,9 +9,14 @@ namespace Agility;
 		protected $applicationDir;
 		protected $documentRoot;
 		protected $filePaths;
-		protected $cliOnlyApp;
+		protected $cliOnlyApp = false;
+
+		protected $noDatabase = false;
+		protected $pluginSystemDisabled = false;
 
 		protected $settings;
+
+		private $dbEngine;
 
 		function __construct() {
 
@@ -21,8 +26,10 @@ namespace Agility;
 
 			$this->setFilePaths();
 
-			$this->cliOnlyApp = false;
+		}
 
+		function configure($callback) {
+			($callback->bindTo($this))();
 		}
 
 		function run() {
@@ -31,11 +38,19 @@ namespace Agility;
 
 		protected function initialize() {
 
-			$this->setupDatabase();
-
 			$this->loadUserConfiguration();
 
+			if (!$this->noDatabase) {
+				$this->dbEngine = Data\DatabaseEngine::getSharedInstance($this->environment);
+			}
+
 			$this->setupPluginSystem();
+
+			if ($this->setupDatabase() == false) {
+				return false;
+			}
+
+			return true;
 
 		}
 
@@ -94,15 +109,21 @@ namespace Agility;
 
 		private function setupDatabase() {
 
+			if ($this->noDatabase) {
+				return true;
+			}
+
 			if (file_exists($this->filePaths->dbFileJson)) {
-				Data\Database::getSharedInstance($this->filePaths->dbFileJson, true);
+				return $this->dbEngine->readDatabaseConfig($this->filePaths->dbFileJson);
 			}
 			else if (file_exists($this->filePaths->dbFileYaml)) {
-				Data\Database::getSharedInstance($this->filePaths->dbFileYaml, false);
+				return $this->dbEngine->readDatabaseConfig($this->filePaths->dbFileYaml, false);
 			}
 			else {
-				Logging\Logger::log("Database initialization error: Database configuration file not found.", Logging\Severity::Critical);
+				Logging\Logger::log("Database initialization error: Database configuration file not found.", Logging\Severity::Notice);
 			}
+
+			return true;
 
 		}
 
@@ -124,7 +145,13 @@ namespace Agility;
 		}
 
 		private function setupPluginSystem() {
-			Plugin\PluginSystem::setup($this->filePaths->pluginsDir);
+
+			Plugin\PluginSystem::$environment = $this->environment;
+
+			if (!$this->pluginSystemDisabled) {
+				Plugin\PluginSystem::setup($this->filePaths->pluginsDir);
+			}
+
 		}
 
 	}

@@ -1,5 +1,9 @@
 <?php
 
-	// var_dump($application);
+	$application->configure(function() {
+
+		// var_dump($this);
+
+	});
 
 ?>

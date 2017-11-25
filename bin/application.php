@@ -6,7 +6,9 @@
 
 			parent::__construct();
 
-			$this->initialize();
+			if ($this->initialize() == false) {
+				header("HTTP/1.1 500");
+			}
 
 		}
 

@@ -6,21 +6,28 @@ use \Agility\Logging\Severity;
 
 	class Logger extends Plugin implements Logging\ILogger {
 
-		function __construct() {
+		function __construct($environment) {
 
-			parent::__construct();
+			parent::__construct($environment);
 
 			Logging\Logger::registerLogger($this);
 
 		}
 
-		function log($msg, $severity = Severity::Log) {
+		function log($msg, $severity = Severity::Info) {
 
-			if ($severity == Severity::Critical) {
-				echo "<h4 style='color: red'>".$msg."</h4>";
+			if ($this->environment == Environment::Development || $this->environment == Environment::Testing) {
+
+				if ($severity == Severity::Critical) {
+					echo "<h4 style='color: red'>".$msg."</h4>";
+				}
+				else {
+					echo $msg;
+				}
+
 			}
 			else {
-				echo $msg;
+				error_log($severity.": ".$msg);
 			}
 
 		}

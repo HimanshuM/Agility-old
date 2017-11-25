@@ -7,9 +7,13 @@ namespace Agility\Plugin;
 		public $name;
 		public $version;
 
+		protected $environment;
+
 		protected $db;
 
-		function __construct() { }
+		function __construct($environment) {
+			$this->environment = $environment;
+		}
 
 	}
 
