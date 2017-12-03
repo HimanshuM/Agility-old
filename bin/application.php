@@ -10,6 +10,10 @@
 				header("HTTP/1.1 500");
 			}
 
+			if ($this->environment == "development") {
+				set_error_handler(function() { echo "<pre>"; debug_print_backtrace(); });
+			}
+
 		}
 
 	}

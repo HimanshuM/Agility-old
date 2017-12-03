@@ -14,6 +14,4 @@
 
 	spl_autoload_register("autoloader");
 
-	set_error_handler(function() { echo "<pre>"; debug_print_backtrace(); });
-
 ?>

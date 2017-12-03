@@ -38,10 +38,8 @@ namespace Agility;
 
 		protected function initialize() {
 
-			$this->loadUserConfiguration();
-
 			if (!$this->noDatabase) {
-				$this->dbEngine = Data\DatabaseEngine::getSharedInstance($this->environment);
+				$this->dbEngine = Data\Initializer::getSharedInstance($this->environment);
 			}
 
 			$this->setupPluginSystem();
@@ -124,23 +122,6 @@ namespace Agility;
 			}
 
 			return true;
-
-		}
-
-		private function loadUserConfiguration() {
-
-			$this->settings = new Configuration\Settings;
-			// Load application config file
-			if (file_exists($this->filePaths->appFile)) {
-
-				$temp["application"] = $this;
-				extract($temp);
-				require_once $this->filePaths->appFile;
-
-				$application = null;
-				$temp = null;
-
-			}
 
 		}
 
