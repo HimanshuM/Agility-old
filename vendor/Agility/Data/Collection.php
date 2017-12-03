@@ -2,24 +2,35 @@
 
 namespace Agility\Data;
 
+use Agility\Exception\PropertyNotFoundException;
+
 	class Collection {
 
-		public $attributes;
+		private $_attributes;
+		private $_model;
 
-		function __construct() {
+		function __construct($model) {
+
 			$this->attributes = [];
+			$this->_model = $model;
+
 		}
 
-		function setAttribute($key, $value) {
+		function __get($key) {
 
-			if (isset($this->attributes[$key])) {
-
-				if (!$this->attributes[$key]->nullable && is_null($value)) {
-					throw new Exception("Value of $key cannot be null", 1);
-				}
-
+			if (isset($this->_attributes[$key])) {
+				return $this->_attributes[$key];
 			}
+			throw new PropertyNotFoundException($this->_model, $key);
 
+		}
+
+		function __set($key, $value) {
+			$this->_attributes[$key] = $value;
+		}
+
+		function enumerate() {
+			return $this->_attributes;
 		}
 
 	}
