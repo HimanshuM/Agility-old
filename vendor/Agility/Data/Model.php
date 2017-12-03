@@ -5,6 +5,7 @@ namespace Agility\Data;
 use Query\Query;
 use Query\WhereClause;
 use Query\Ordering;
+use Agility\String\String;
 
 	class Model {
 
@@ -25,11 +26,18 @@ use Query\Ordering;
 
 		private $_isDirty;
 
-		function __construct() {
+		function __construct($empty = false) {
 
 			$this->_dbEngineObj = DatabaseEngine::getSharedInstance();
 
-			$this->initialize();
+			$this->setDefaultConnectionName();
+
+			$this->_prototype = new Collection($this->_class);
+			$this->_isDirty = false;
+
+			if (!$empty) {
+				$this->initialize();
+			}
 
 		}
 
@@ -45,15 +53,22 @@ use Query\Ordering;
 		}
 
 		static function findMany($ids) {
-			return static::findBy((new static)->primaryKey, $ids);
+			return static::findBy((new static(true))->primaryKey, $ids);
 		}
 
 		static function findBy($column, $value) {
+			return static::where([$column => $value]);
+		}
 
-			$res = new static;
+		static function where($clause) {
+
+			$res = new static(true);
 
 			$query = $res->newQuery();
-			$query->where = new WhereClause($column, $value);
+			$query->where = [];
+			foreach ($clause as $attribute => $value) {
+				$query->where[] = new WhereClause($res->getAttributeStorageName($attribute), $value);
+			}
 
 			$results = [];
 			$collections = $res->getConnector()->query($query);
@@ -76,31 +91,18 @@ use Query\Ordering;
 				return false;
 			}
 
-			$results = [];
-
-			$res = new static;
-
+			$res = new static(true);
 			$query = new Query($query);
-			$collections = $res->getConnector()->query($query);
-			foreach ($collections as $collection) {
-
-				$res = new static;
-				$res->fillAttributes($collection);
-				$res->_isDirty = false;
-				$results[] = $res;
-
-			}
-
-			return $results;
+			return $res->getConnector()->query($query);
 
 		}
 
-		function __get($key) {
-			return $this->getAttribute($key);
+		function __get($attribute) {
+			return $this->getAttribute($attribute);
 		}
 
-		function __set($key, $value) {
-			$this->setAttribute($key, $value);
+		function __set($attribute, $value) {
+			$this->setAttribute($attribute, $value);
 		}
 
 		function save() {
@@ -110,7 +112,7 @@ use Query\Ordering;
 
 			$attributes = $this->fetchAttributes();
 			if ($this->autoIncrementingPrimaryKey) {
-				unset($attributes[$this->primaryKey]);
+				unset($attributes[$this->getAttributeStorageName($this->primaryKey)]);
 			}
 			if ($this->hasTouchTimestamps) {
 
@@ -125,10 +127,10 @@ use Query\Ordering;
 			$query->attributes = $attributes;
 
 			if ($this->isDirty()) {
-				$query->where = new WhereClause($this->primaryKey, $this->getAttribute($this->primaryKey));
+				$query->where = new WhereClause($this->getAttributeStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
 			}
 
-			$this->getConnector()->query($query);
+			$this->getConnector()->exec($query);
 			if ($this->autoIncrementingPrimaryKey && !$this->isDirty()) {
 				$this->setAttribute($this->primaryKey, $this->getConnector()->getLastInsertId());
 			}
@@ -138,7 +140,7 @@ use Query\Ordering;
 		function refresh() {
 
 			$query = $this->newQuery();
-			$query->where = new WhereClause($this->primaryKey, $this->getAttribute($this->primaryKey));
+			$query->where = new WhereClause($this->getAttributeStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
 
 			$this->fillAttributes($this->getConnector()->query($query));
 			$this->_isDirty = false;
@@ -162,11 +164,6 @@ use Query\Ordering;
 			$this->hasTouchTimestamps = true;
 			$this->autoTouchTimestampsUpdate = true;
 
-			$this->setDefaultConnectionName();
-
-			$this->_prototype = new Collection($this->_class);
-			$this->_isDirty = false;
-
 		}
 
 		private function setDefaultConnectionName() {
@@ -179,8 +176,8 @@ use Query\Ordering;
 
 		private function fillAttributes(Collection $collection) {
 
-			foreach ($collection->enumerate() as $key => $value) {
-				$this->setAttribute($key, $value);
+			foreach ($collection->enumerate() as $attribute => $value) {
+				$this->setAttribute($attribute, $value);
 			}
 
 		}
@@ -188,30 +185,32 @@ use Query\Ordering;
 		private function fetchAttributes() {
 
 			$attributes = [];
-			foreach ($this->_prototype->enumerate() as $key => $value) {
-				$attributes[$key] = $this->getAttribute($key);
+			foreach ($this->_prototype->enumerate() as $attribute => $value) {
+				$attributes[$attribute] = $this->getAttribute($attribute);
 			}
 			return $attributes;
 
 		}
 
-		private function getAttribute($key) {
+		private function getAttribute($attribute) {
 
-			$accessor = "get".$key."Attribute";
+			$accessor = "get".ucfirst($attribute)."Attribute";
+			$attribute = $this->getAttributeStorageName($attribute);
 			if (method_exists($this, $accessor)) {
-				return $this->$accessor($this->_prototype->$key);
+				return $this->$accessor($this->_prototype->$attribute);
 			}
-			return $this->_prototype->$key;
+			return $this->_prototype->$attribute;
 
 		}
 
-		private function setAttribute($key, $value) {
+		private function setAttribute($attribute, $value) {
 
-			$accessor = "set".$key."Attribute";
+			$accessor = "set".ucfirst($attribute)."Attribute";
+			$attribute = $this->getAttributeStorageName($attribute);
 			if (method_exists($this, $accessor)) {
 				$value = $this->$accessor($value);
 			}
-			$this->_prototype->$key = $value;
+			$this->_prototype->$attribute = $value;
 
 			$this->_isDirty = true;
 
@@ -223,6 +222,14 @@ use Query\Ordering;
 			$query->table = $this->table;
 			return $query;
 
+		}
+
+		private function getAttributeNormalizedName($attribute) {
+			return String::pascalCase($attribute);
+		}
+
+		private function getAttributeStorageName($attribute) {
+			return String::snakeCase($attribute);
 		}
 
 	}
