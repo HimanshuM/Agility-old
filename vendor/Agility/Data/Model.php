@@ -67,7 +67,7 @@ use Agility\String\String;
 			$query = $res->newQuery();
 			$query->where = [];
 			foreach ($clause as $attribute => $value) {
-				$query->where[] = new WhereClause($res->getAttributeStorageName($attribute), $value);
+				$query->where[] = new WhereClause($res->getStorageName($attribute), $value);
 			}
 
 			$results = [];
@@ -112,7 +112,7 @@ use Agility\String\String;
 
 			$attributes = $this->fetchAttributes();
 			if ($this->autoIncrementingPrimaryKey) {
-				unset($attributes[$this->getAttributeStorageName($this->primaryKey)]);
+				unset($attributes[$this->getStorageName($this->primaryKey)]);
 			}
 			if ($this->hasTouchTimestamps) {
 
@@ -127,7 +127,7 @@ use Agility\String\String;
 			$query->attributes = $attributes;
 
 			if ($this->isDirty()) {
-				$query->where = new WhereClause($this->getAttributeStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
+				$query->where = new WhereClause($this->getStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
 			}
 
 			$this->getConnector()->exec($query);
@@ -140,7 +140,7 @@ use Agility\String\String;
 		function refresh() {
 
 			$query = $this->newQuery();
-			$query->where = new WhereClause($this->getAttributeStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
+			$query->where = new WhereClause($this->getStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
 
 			$this->fillAttributes($this->getConnector()->query($query));
 			$this->_isDirty = false;
@@ -195,7 +195,7 @@ use Agility\String\String;
 		private function getAttribute($attribute) {
 
 			$accessor = "get".ucfirst($attribute)."Attribute";
-			$attribute = $this->getAttributeStorageName($attribute);
+			$attribute = $this->getStorageName($attribute);
 			if (method_exists($this, $accessor)) {
 				return $this->$accessor($this->_prototype->$attribute);
 			}
@@ -206,7 +206,7 @@ use Agility\String\String;
 		private function setAttribute($attribute, $value) {
 
 			$accessor = "set".ucfirst($attribute)."Attribute";
-			$attribute = $this->getAttributeStorageName($attribute);
+			$attribute = $this->getStorageName($attribute);
 			if (method_exists($this, $accessor)) {
 				$value = $this->$accessor($value);
 			}
@@ -219,16 +219,16 @@ use Agility\String\String;
 		private function newQuery() {
 
 			$query = new Query;
-			$query->table = $this->table;
+			$query->table = $this->getStorageName($this->table);
 			return $query;
 
 		}
 
-		private function getAttributeNormalizedName($attribute) {
+		private function getNormalizedName($attribute) {
 			return String::pascalCase($attribute);
 		}
 
-		private function getAttributeStorageName($attribute) {
+		private function getStorageName($attribute) {
 			return String::snakeCase($attribute);
 		}
 
