@@ -20,7 +20,7 @@ use Agility\String\String;
 
 		protected $connectionName;
 
-		private $_dbEngineObj;
+		private $_dbInitObj;
 		private $_prototype;
 		private $_class;
 
@@ -28,7 +28,7 @@ use Agility\String\String;
 
 		function __construct($empty = false) {
 
-			$this->_dbEngineObj = DatabaseEngine::getSharedInstance();
+			$this->_dbInitObj = Initializer::getSharedInstance();
 
 			$this->setDefaultConnectionName();
 
@@ -85,14 +85,15 @@ use Agility\String\String;
 
 		}
 
-		static function query($query) {
+		static function query($queryString) {
 
-			if (!is_string($query)) {
+			if (!is_string($queryString)) {
 				return false;
 			}
 
 			$res = new static(true);
-			$query = new Query($query);
+			$query = $res->newQuery();
+			$query->query = $queryString;
 			return $res->getConnector()->query($query);
 
 		}
@@ -167,11 +168,11 @@ use Agility\String\String;
 		}
 
 		private function setDefaultConnectionName() {
-			$this->connectionName = $this->_dbEngineObj->getDefaultConnectionIndex();
+			$this->connectionName = $this->_dbInitObj->getDefaultConnectionIndex();
 		}
 
 		protected function getConnector() {
-			return $this->_dbEngineObj->getConnectorFromConnectionName($this->connectionName);
+			return $this->_dbInitObj->getConnectorFromConnectionName($this->connectionName);
 		}
 
 		private function fillAttributes(Collection $collection) {
@@ -219,6 +220,7 @@ use Agility\String\String;
 		private function newQuery() {
 
 			$query = new Query;
+			$query->connection = $this->connectionName;
 			$query->table = $this->getStorageName($this->table);
 			return $query;
 

@@ -3,11 +3,8 @@
 	function autoloader($class) {
 
 		$path = str_replace("\\", "/", $class);
-		try {
+		if (file_exists(__DIR__."/../".$path.".php")) {
 			require_once __DIR__."/../".$path.".php";
-		}
-		catch (Exception $e) {
-			debug_print_backtrace();
 		}
 
 	}

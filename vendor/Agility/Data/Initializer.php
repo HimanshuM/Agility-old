@@ -24,7 +24,7 @@ use Agility\Logging;
 				if ($appEnvironment === false) {
 					throw new \Exception("Application environment not specified", 1);
 				}
-				self::$_sharedInstance = new DatabaseEngine($appEnvironment);
+				self::$_sharedInstance = new Initializer($appEnvironment);
 
 			}
 			return self::$_sharedInstance;
@@ -105,7 +105,7 @@ use Agility\Logging;
 				try {
 
 					$dbConnectorObj = $this->dbConnectors[$dbConfig["adapter"]][0];
-					$dbConnectorObj->initiateConnection($dbConfig);
+					$dbConnectorObj->connect($dbConfig);
 
 				}
 				catch (\Exception $e) {

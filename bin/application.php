@@ -11,7 +11,7 @@
 			}
 
 			if ($this->environment == "development") {
-				set_error_handler(function() { echo "<pre>"; debug_print_backtrace(); });
+				// set_error_handler(function() { echo "<pre>"; debug_print_backtrace(); });
 			}
 
 		}

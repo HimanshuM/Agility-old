@@ -2,7 +2,7 @@
 
 (function () {
 
-	$libDirs = glob("/*", GLOB_ONLYDIR);
+	$libDirs = glob(__DIR__."/*", GLOB_ONLYDIR);
 	foreach ($libDirs as $library) {
 
 		if (file_exists($library."/autoload.php")) {

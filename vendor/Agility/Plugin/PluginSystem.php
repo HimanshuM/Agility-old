@@ -7,7 +7,11 @@ namespace Agility\Plugin;
 		public static $environment;
 		public static $plugins = [];
 
+		public static $location;
+
 		static function setup($location) {
+
+			self::$location = $location;
 
 			$pluginDirs = glob($location."/*", GLOB_ONLYDIR);
 			foreach ($pluginDirs as $plugin) {
@@ -18,16 +22,16 @@ namespace Agility\Plugin;
 
 		static function loadPlugin($path) {
 
-			$pluginName = self::getPluginName($path);
+			$pluginInfo = self::getPluginName($path);
 			// Skip directories with trailing ".off" in the name
-			if (stripos($pluginName, ".off") !== false) {
+			if (stripos($pluginInfo[0], ".off") !== false) {
 				return;
 			}
-			$filePath = $path."/".$pluginName.".php";
+			$filePath = $path."/".$pluginInfo[0].".php";
 			if (file_exists($filePath)) {
 
 				require_once($filePath);
-				self::setupPlugin($pluginName);
+				self::setupPlugin($pluginInfo[1]);
 
 			}
 			else {
@@ -61,8 +65,10 @@ namespace Agility\Plugin;
 
 		private static function getPluginName($path) {
 
-			$segmentedPath = explode("/", str_replace("\\", "/", $path));
-			return array_pop($segmentedPath);
+			$pluginName = trim(substr($path, strlen(self::$location)), "/");
+
+			$segmentedPath = explode("/", str_replace("\\", "/", self::$location));
+			return [$pluginName, ucfirst(array_pop($segmentedPath)."\\".$pluginName."\\".$pluginName)];
 
 		}
 

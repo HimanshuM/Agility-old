@@ -4,16 +4,10 @@ namespace Agility\Data;
 
 	interface IDatabaseConnector {
 
-		public $targetPlatform;
+		function connect($connectionConfig);
 
-		function initiateConnection($connectionConfig);
-
-		function query($queryString);
-		function exec($execString);
-
-		function insert($model, $attributes);
-		function update($model, $attributes, $identifier);
-		function delete($model, $identifier);
+		function query(Query\Query $query);
+		function exec(Query\Query $exec);
 
 	}
 

@@ -4,6 +4,8 @@ namespace Agility\Data\Query;
 
 	class Query {
 
+		public $connection;
+
 		// Raw query. query takes precedence over others
 		public $query;
 
