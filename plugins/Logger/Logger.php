@@ -8,7 +8,7 @@ use \Agility\Logging\Severity;
 
 	class Logger extends Plugin implements Logging\ILogger {
 
-		function __construct($environment) {
+		function __construct(Environment $environment) {
 
 			parent::__construct($environment);
 

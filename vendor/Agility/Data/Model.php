@@ -85,7 +85,7 @@ use Agility\String\String;
 
 		}
 
-		static function query($queryString) {
+		static function query($queryString, $params = []) {
 
 			if (!is_string($queryString)) {
 				return false;
@@ -93,7 +93,19 @@ use Agility\String\String;
 
 			$res = new static(true);
 			$query = $res->newQuery();
-			$query->query = $queryString;
+			$query->rawQuery = new RawQuery($queryString);
+
+			if (func_num_args() > 1) {
+
+				if (is_array($params)) {
+					$query->rawQuery->params = $params;
+				}
+				else {
+					$query->rawQuery->params = array_slice(func_get_args(), 1);
+				}
+
+			}
+
 			return $res->getConnector()->query($query);
 
 		}
@@ -128,12 +140,20 @@ use Agility\String\String;
 			$query->attributes = $attributes;
 
 			if ($this->isDirty()) {
-				$query->where = new WhereClause($this->getStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
-			}
 
-			$this->getConnector()->exec($query);
-			if ($this->autoIncrementingPrimaryKey && !$this->isDirty()) {
-				$this->setAttribute($this->primaryKey, $this->getConnector()->getLastInsertId());
+				$query->where = new WhereClause($this->getStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
+				$this->getConnector()->update($query);
+
+			}
+			else {
+
+				if ($this->autoIncrementingPrimaryKey) {
+					$key = $this->getConnector()->insertAndGetId($query);
+				}
+				else {
+					$this->getConnector()->insert($query);
+				}
+
 			}
 
 		}
@@ -146,10 +166,6 @@ use Agility\String\String;
 			$this->fillAttributes($this->getConnector()->query($query));
 			$this->_isDirty = false;
 
-		}
-
-		function sanitize($text) {
-			return $this->getConnector()->sanitize($text);
 		}
 
 		function isDirty() {
@@ -219,8 +235,8 @@ use Agility\String\String;
 
 		private function newQuery() {
 
-			$query = new Query;
-			$query->table = $this->getStorageName($this->table);
+			$query = $this->getConnector()->createQuery();
+			$query->from = $this->getStorageName($this->table);
 			return $query;
 
 		}

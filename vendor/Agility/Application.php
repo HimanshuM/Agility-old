@@ -73,7 +73,15 @@ namespace Agility;
 
 			}
 
-			$this->environment = $environment;
+			if ($environment == "development") {
+				$this->enrvironment = Environment::Development;
+			}
+			else if ($environment == "testing") {
+				$this->environment = Environment::Testing;
+			}
+			else if ($environment == "production") {
+				$this->environment = Environment::Production;
+			}
 
 		}
 

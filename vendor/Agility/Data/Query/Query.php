@@ -4,13 +4,11 @@ namespace Agility\Data\Query;
 
 	class Query {
 
-		// Raw query. query takes precedence over others
-		public $query;
+		// Raw query. rawQuery takes precedence over others
+		public $rawQuery;
 
 		// Table name
-		public $table;
-		// true: SELECT | false: INSERT or UPDATE
-		public $fetch;
+		public $from;
 		// Array of columns, [] = All columns
 		public $attributes;
 		// Object of class WhereClause
@@ -24,15 +22,22 @@ namespace Agility\Data\Query;
 
 		function __construct() {
 
-			$query = "";
+			$this->rawQuery = null;
 
-			$fetch = true;
-			$attributes = [];
-			$where = null;
-			$limit = [];
-			$sequence = [];
+			$this->attributes = [];
+			$this->where = null;
+			$this->limit = [];
+			$this->sequence = [];
 			$this->objectOf = "Collection";
 
+		}
+
+		function setRawQuery(RawQuery $query) {
+			$this->rawQuery = $query;
+		}
+
+		function getRawQuery() {
+			return $this->rawQuery ?? null;
 		}
 
 	}

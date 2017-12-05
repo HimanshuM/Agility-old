@@ -2,6 +2,7 @@
 
 namespace Agility\Data;
 
+use Agility\Environment;
 use Agility\Logging;
 
 	class Initializer {
@@ -13,11 +14,11 @@ use Agility\Logging;
 
 		private static $_sharedInstance;
 
-		private function __construct($appEnvironment) {
+		private function __construct(Environment $appEnvironment) {
 			$this->appEnvironment = $appEnvironment;
 		}
 
-		static function getSharedInstance($appEnvironment = null) {
+		static function getSharedInstance(Environment $appEnvironment = null) {
 
 			if (empty(self::$_sharedInstance)) {
 
@@ -90,7 +91,7 @@ use Agility\Logging;
 				}
 				catch (\Exception $e) {
 
-					Logging\Logger::log("Database connection error: ".$this->dbConnectors[$dbConfig["adapter"]][0]->name." failed to initialze.", Logging\Severity::Critical);
+					Logging\Logger::log("Database connection error: ".$connectionName." connection failed to initialze.".$e->getMessage(), Logging\Severity::Critical);
 					return false;
 
 				}

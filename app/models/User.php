@@ -16,7 +16,7 @@ use Agility\Data\Model;
 
 		static function deepSearch($text) {
 
-			$query = User::sanitizeQuery("SELECT * FROM user WHERE email LIKE #1 AND name LIKE #1;", "%".$email"%");
+			$query = User::query("SELECT * FROM user WHERE email LIKE ? AND name LIKE ?;", ["%".$email"%", "%".$email."%"]);
 
 		}
 

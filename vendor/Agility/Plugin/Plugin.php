@@ -9,7 +9,7 @@ namespace Agility\Plugin;
 
 		protected $environment;
 
-		function __construct($environment) {
+		function __construct(Environment $environment) {
 			$this->environment = $environment;
 		}
 
