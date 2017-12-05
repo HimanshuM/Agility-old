@@ -31,21 +31,6 @@ use Agility\Logging;
 
 		}
 
-		function registerDatabaseConnector(IDatabaseConnector $connectionObj) {
-
-			if (is_array($connectionObj->targetPlatform)) {
-
-				foreach ($connectionObj->targetPlatform as $target) {
-					$this->dbConnectors[$target][] = $connectionObj;
-				}
-
-			}
-			else {
-				$this->dbConnectors[$connectionObj->targetPlatform][] = $connectionObj;
-			}
-
-		}
-
 		function getDefaultConnectionIndex() {
 
 			foreach ($this->connectionCache as $key => $value) {
@@ -93,20 +78,15 @@ use Agility\Logging;
 			$dbSettingsArray = $dbSettingsArray[$this->appEnvironment];
 			foreach ($dbSettingsArray as $connectionName => $dbConfig) {
 
-				if (empty($this->dbConnectors[$dbConfig["adapter"]])) {
+				if (is_null($dbConnectorObj = Connector\ConnectionFactory::createInstance($dbConfig))) {
 
 					Logging\Logger::log("Database initialization error: Unidentified adapter ".$dbConfig["adapter"]." found in database configuration.", Logging\Severity::Critical);
 					return false;
 
 				}
 
-				$dbConnectorObj;
-
 				try {
-
-					$dbConnectorObj = $this->dbConnectors[$dbConfig["adapter"]][0];
 					$dbConnectorObj->connect($dbConfig);
-
 				}
 				catch (\Exception $e) {
 

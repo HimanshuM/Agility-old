@@ -220,7 +220,6 @@ use Agility\String\String;
 		private function newQuery() {
 
 			$query = new Query;
-			$query->connection = $this->connectionName;
 			$query->table = $this->getStorageName($this->table);
 			return $query;
 

@@ -1,20 +1,13 @@
 <?php
 
-namespace Plugins\DatabaseConnectors\MysqlConnector;
-
-use Plugins\DatabaseConnectors\ConnectorBase;
+namespace Agility\Data\Connector;
 
 	class MysqlConnector extends ConnectorBase {
 
 		function __construct() {
 
 			parent::__construct();
-			$this->targetPlatform = "mysql";
 
-		}
-
-		function registerSelf() {
-			$this->dbInitializer->registerDatabaseConnector($this);
 		}
 
 		function connect($connectionConfig) {
