@@ -2,6 +2,7 @@
 
 namespace Agility\Data\Connector\Mysql;
 
+use PDO;
 use Agility\Data\Connector\ConnectorBase;
 use Agility\Logging\Logger;
 
@@ -21,13 +22,15 @@ use Agility\Logging\Logger;
 			$port = $this->getPort($config);
 			$unixSocket = $this->getUnixSocket($config);
 
+			$charSet = $this->getCharacterSet($config);
+
 			$dbName = $this->getDBName($config);
 			$username = $this->getUsername($config);
 			$password = $this->getPassword($config);
 
 			$config = $this->getExtraConfig($config);
 
-			$this->connection = $this->getPdoConnection($this->getDsn(), $username, $password, $config);
+			$this->connection = $this->getPdoConnection($this->getDsn($dbName, $host, $port, $unixSocket, $charSet), $username, $password, $config);
 
 		}
 
@@ -44,10 +47,10 @@ use Agility\Logging\Logger;
 
 			}
 			else {
-				list($query, $params) = (new MysqlQueryCompiler($query))->compileSelect();
+				list($rawQuery, $params) = (new MysqlQueryCompiler($query))->compileSelect();
 			}
 
-			return $this->runQuery($query, $params);
+			return $this->runQuery($rawQuery, $params, $query->instanceOf)->fetchAll();
 
 		}
 
@@ -57,12 +60,17 @@ use Agility\Logging\Logger;
 
 		function insert(\Agility\Data\Query\Query $query) {
 
-			list($query, $params) = (new MysqlQueryCompiler($query))->compileInsert();
-			return $this->runQuery($query, $params);
+			list($rawQuery, $params) = (new MysqlQueryCompiler($query))->compileInsert();
+			return $this->runQuery($rawQuery, $params);
 
 		}
 
 		function insertAndGetId(\Agility\Data\Query\Query $query) {
+
+			list($rawQuery, $params) = (new MysqlQueryCompiler($query))->compileInsert();
+			if ($this->runQuery($rawQuery, $params) === true) {
+				return $this->connection->lastInsertId();
+			}
 
 		}
 
@@ -102,6 +110,10 @@ use Agility\Logging\Logger;
 			return $this->getConfiguration($config, "password", "Password not specified. Using empty password", false);
 		}
 
+		private function getCharacterSet($config) {
+			return $config["charset"] ?? null;
+		}
+
 		private function getExtraConfig($config) {
 
 			$configuration = [];
@@ -126,7 +138,7 @@ use Agility\Logging\Logger;
 				throw new Exception("Cannot connect to Mysql database, neither host nor unix socket is specified.", 1);
 			}
 
-			return "mysql:dbname=".$db.(!empty($unixSocket) ? ";unix_socket=".$unixSocket : "").(empty($unixSocket) && !empty($host) ? ";host=".$host.(!empty($port) ? ";port=".$port : "") : "").(!empty($charSet) ? ";charset=".$charSet);
+			return "mysql:dbname=".$db.(!empty($unixSocket) ? ";unix_socket=".$unixSocket : "").(empty($unixSocket) && !empty($host) ? ";host=".$host.(!empty($port) ? ";port=".$port : "") : "").(!empty($charSet) ? ";charset=".$charSet : "");
 
 		}
 
@@ -150,30 +162,28 @@ use Agility\Logging\Logger;
 
 		}
 
-		private function runQuery($query, $params = null) {
+		private function runQuery($query, $params = null, $instanceOf = null) {
 
 			$stmt = $this->connection->prepare($query);
+			if (!is_null($instanceOf)) {
+				$stmt->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $instanceOf);
+			}
+
 			if (!empty($params)) {
 
-				if (is_array($params[0])) {
-
-					$results = [];
-
-					foreach ($params as $set) {
-
-						$res = $stmt->execute($set);
-						$results[] = $res->fetchAll();
-
-					}
-
-					return $results;
-
+				try {
+					$stmt->execute($params);
 				}
-				else {
-					return $stmt->execute($params);
+				catch(Exception $e) {
+					var_dump($e->getMessage());
 				}
 
 			}
+			else {
+				$stmt->execute();
+			}
+
+			return $stmt;
 
 		}
 

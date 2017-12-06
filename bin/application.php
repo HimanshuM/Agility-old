@@ -19,10 +19,12 @@
 		function test() {
 
 			$user = new App\Models\User;
-			$user->email = "himanshu@gmail.com";
-			$user->name = "Himanshu Malpande";
+			$user->email = "himanshu@jigsawacademy.com";
+			$user->shortName = "Himanshu Malpande";
 
-			$user->save();
+			// $user->save();
+			echo "<pre>";
+			App\Models\User::deepSearch("himanshu");
 
 		}
 

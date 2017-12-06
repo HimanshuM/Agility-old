@@ -2,9 +2,11 @@
 
 namespace Agility\Data;
 
-use Query\Query;
-use Query\WhereClause;
-use Query\Ordering;
+use DateTime;
+use Agility\Data\Query\Ordering;
+use Agility\Data\Query\Query;
+use Agility\Data\Query\RawQuery;
+use Agility\Data\Query\WhereClause;
 use Agility\String\Str;
 
 	class Model {
@@ -25,6 +27,7 @@ use Agility\String\Str;
 		private $_class;
 
 		private $_isDirty;
+		private $_freshObject;
 
 		function __construct($empty = false) {
 
@@ -34,6 +37,7 @@ use Agility\String\Str;
 
 			$this->_prototype = new Collection($this->_class);
 			$this->_isDirty = false;
+			$this->_freshObject = true;
 
 			if (!$empty) {
 				$this->initialize();
@@ -121,7 +125,6 @@ use Agility\String\Str;
 		function save() {
 
 			$query = $this->newQuery();
-			$query->fetch = false;
 
 			$attributes = $this->fetchAttributes();
 			if ($this->autoIncrementingPrimaryKey) {
@@ -129,10 +132,14 @@ use Agility\String\Str;
 			}
 			if ($this->hasTouchTimestamps) {
 
-				$now = new DateTime();
-				$attributes[static::UpdatedAt] = $now->format("Y-m-d H:i:s");
-				if (!$this->isDirty()) {
-					$attributes[static::CreatedAt] = $now->format("Y-m-d H:i:s");
+				if (!$this->autoTouchTimestampsUpdate) {
+
+					$now = new DateTime();
+					$attributes[static::UpdatedAt] = $now->format("Y-m-d H:i:s");
+					if (!$this->isDirty()) {
+						$attributes[static::CreatedAt] = $now->format("Y-m-d H:i:s");
+					}
+
 				}
 
 			}
@@ -148,13 +155,20 @@ use Agility\String\Str;
 			else {
 
 				if ($this->autoIncrementingPrimaryKey) {
+
 					$key = $this->getConnector()->insertAndGetId($query);
+					$this->setAttribute($this->primaryKey, $key);
+
 				}
 				else {
 					$this->getConnector()->insert($query);
 				}
 
+				$this->_freshObject = true;
+
 			}
+
+			$this->_isDirty = false;
 
 		}
 
@@ -163,7 +177,7 @@ use Agility\String\Str;
 			$query = $this->newQuery();
 			$query->where = new WhereClause($this->getStorageName($this->primaryKey), $this->getAttribute($this->primaryKey));
 
-			$this->fillAttributes($this->getConnector()->query($query));
+			$this->fillAttributes($this->getConnector()->query($query)[0]);
 			$this->_isDirty = false;
 
 		}
@@ -172,10 +186,14 @@ use Agility\String\Str;
 			return $this->_isDirty;
 		}
 
+		function isFreshObject() {
+			return $this->_freshObject;
+		}
+
 		private function initialize() {
 
 			$this->_class = get_called_class();
-			$this->tableName = $this->_class;
+			$this->tableName = $this->getStorageName($this->getTableNameFromQualifiedClassName());
 			$this->primaryKey = "id";
 			$this->autoIncrementingPrimaryKey = true;
 			$this->hasTouchTimestamps = true;
@@ -229,14 +247,16 @@ use Agility\String\Str;
 			}
 			$this->_prototype->$attribute = $value;
 
-			$this->_isDirty = true;
+			if (!$this->_freshObject) {
+				$this->_isDirty = true;
+			}
 
 		}
 
 		private function newQuery() {
 
 			$query = $this->getConnector()->createQuery();
-			$query->from = $this->getStorageName($this->table);
+			$query->from = $this->getStorageName($this->tableName);
 			return $query;
 
 		}
@@ -247,6 +267,12 @@ use Agility\String\Str;
 
 		private function getStorageName($attribute) {
 			return Str::snakeCase($attribute);
+		}
+
+		private function getTableNameFromQualifiedClassName() {
+
+			$segments = explode("\\", $this->_class);
+			return array_pop($segments);
 		}
 
 	}

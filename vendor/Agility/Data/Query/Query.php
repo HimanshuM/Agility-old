@@ -28,7 +28,7 @@ namespace Agility\Data\Query;
 			$this->where = null;
 			$this->limit = [];
 			$this->sequence = [];
-			$this->objectOf = "Collection";
+			$this->instanceOf = "Agility\\Data\\Collection";
 
 		}
 

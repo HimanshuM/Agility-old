@@ -1,7 +1,8 @@
 {
 	"development": {
 		"mysql1": {
-			"database": "jaws",
+			"adapter": "mysql",
+			"database": "jaws_dev",
 			"username": "root",
 			"password": "password"
 		}

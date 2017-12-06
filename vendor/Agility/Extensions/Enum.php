@@ -2,7 +2,7 @@
 
 namespace Agility\Extensions;
 
-	class Enum {
+	abstract class Enum {
 
 		public const __default = 0;
 
@@ -19,8 +19,8 @@ namespace Agility\Extensions;
 
 		}
 
-		static function toString(Enum $object) {
-
+		function toString() {
+			return "".$this->_internal;
 		}
 
 	}

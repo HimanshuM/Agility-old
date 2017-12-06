@@ -74,10 +74,10 @@ use Agility\Logging;
 
 		private function processDatabaseConfig($dbSettingsArray) {
 
-			$dbSettingsArray = $dbSettingsArray[$this->appEnvironment];
+			$dbSettingsArray = $dbSettingsArray[$this->appEnvironment->toString()];
 			foreach ($dbSettingsArray as $connectionName => $dbConfig) {
 
-				if (is_null($dbConnectorObj = Connector\ConnectionFactory::createInstance($dbConfig))) {
+				if (is_null($dbConnectorObj = Connector\ConnectionFactory::createConnector($dbConfig))) {
 
 					Logging\Logger::log("Database initialization error: Unidentified adapter ".$dbConfig["adapter"]." found in database configuration.", Logging\Severity::Critical);
 					return false;

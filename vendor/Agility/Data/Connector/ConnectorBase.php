@@ -2,6 +2,8 @@
 
 namespace Agility\Data\Connector;
 
+use Agility\Data\IDatabaseConnector;
+
 use PDO;
 
 	abstract class ConnectorBase implements IDatabaseConnector {

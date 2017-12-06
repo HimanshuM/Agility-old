@@ -4,16 +4,18 @@ namespace Agility\Data\Connector;
 
 	class ConnectionFactory {
 
-		static function createConnector($adapter) {
+		static function createConnector($dbConfig) {
+
+			$adapter = $dbConfig["adapter"];
 
 			if ($adapter == "mysql") {
-				return new MysqlConnector;
+				return new Mysql\MysqlConnector;
 			}
 			else if ($adapter == "postgres") {
-				return new PostgresConnector;
+				return new Postgres\PostgresConnector;
 			}
 			else if ($adapter == "mongodb" || $adapter == "mongo") {
-				return new MongoDBConnector;
+				return new MongoDB\MongoDBConnector;
 			}
 			else {
 				return null;

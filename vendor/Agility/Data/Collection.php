@@ -9,9 +9,9 @@ use Agility\Exception\PropertyNotFoundException;
 		private $_attributes;
 		private $_model;
 
-		function __construct($model) {
+		function __construct($model = "Model") {
 
-			$this->attributes = [];
+			$this->_attributes = [];
 			$this->_model = $model;
 
 		}
