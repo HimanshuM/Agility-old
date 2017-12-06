@@ -1,0 +1,9 @@
+{
+	"development": {
+		"mysql1": {
+			"database": "jaws",
+			"username": "root",
+			"password": "password"
+		}
+	}
+}

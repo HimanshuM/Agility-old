@@ -41,12 +41,10 @@ use Agility\Logging;
 		}
 
 		function getConnectorFromConnectionName($name) {
-
 			return $this->connectionCache[$name];
-
 		}
 
-		private function readDatabaseConfig($configurationFile, $isJson = true) {
+		function readDatabaseConfig($configurationFile, $isJson = true) {
 
 			if (($dbSettings = file_get_contents($configurationFile)) === false) {
 

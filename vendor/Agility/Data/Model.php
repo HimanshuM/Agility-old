@@ -5,7 +5,7 @@ namespace Agility\Data;
 use Query\Query;
 use Query\WhereClause;
 use Query\Ordering;
-use Agility\String\String;
+use Agility\String\Str;
 
 	class Model {
 
@@ -242,11 +242,11 @@ use Agility\String\String;
 		}
 
 		private function getNormalizedName($attribute) {
-			return String::pascalCase($attribute);
+			return Str::pascalCase($attribute);
 		}
 
 		private function getStorageName($attribute) {
-			return String::snakeCase($attribute);
+			return Str::snakeCase($attribute);
 		}
 
 	}

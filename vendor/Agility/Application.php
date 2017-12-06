@@ -33,7 +33,10 @@ namespace Agility;
 		}
 
 		function run() {
-			Logging\Logger::log("Yay!!");
+
+			// Logging\Logger::log("Yay!!");
+			$this->test();
+
 		}
 
 		protected function initialize() {
@@ -74,13 +77,13 @@ namespace Agility;
 			}
 
 			if ($environment == "development") {
-				$this->enrvironment = Environment::Development;
+				$this->environment = new Environment(Environment::Development);
 			}
 			else if ($environment == "testing") {
-				$this->environment = Environment::Testing;
+				$this->environment = new Environment(Environment::Testing);
 			}
 			else if ($environment == "production") {
-				$this->environment = Environment::Production;
+				$this->environment = new Environment(Environment::Production);
 			}
 
 		}

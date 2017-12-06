@@ -2,7 +2,7 @@
 
 namespace Agility\String;
 
-	class String {
+	class Str {
 
 		// CamelCase
 		static function camelCase($string) {

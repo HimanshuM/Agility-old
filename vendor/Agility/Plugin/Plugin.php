@@ -2,6 +2,8 @@
 
 namespace Agility\Plugin;
 
+use Agility\Environment;
+
 	class Plugin {
 
 		public $name;

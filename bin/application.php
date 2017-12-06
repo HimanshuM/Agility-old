@@ -16,6 +16,16 @@
 
 		}
 
+		function test() {
+
+			$user = new App\Models\User;
+			$user->email = "himanshu@gmail.com";
+			$user->name = "Himanshu Malpande";
+
+			$user->save();
+
+		}
+
 	}
 
 ?>
