@@ -2,7 +2,7 @@
 
 namespace Agility\Plugin;
 
-use Agility\Environment;
+use Agility\Configuration\Environment;
 
 	class Plugin {
 

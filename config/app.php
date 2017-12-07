@@ -1,6 +1,6 @@
 <?php
 
-	$application->configure(function() {
+	Application::configure(function() {
 
 		// var_dump($this);
 

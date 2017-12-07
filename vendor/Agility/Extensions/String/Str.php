@@ -6,7 +6,15 @@ namespace Agility\Extensions\String;
 
 		// CamelCase
 		static function camelCase($string) {
-			return $string;
+
+			$matches = [];
+			preg_match_all("/(_[a-z])/", $string, $matches);
+			foreach ($matches[0] as $match) {
+				$string = str_replace($match, strtoupper($match[1]), $string);
+			}
+
+			return ucfirst($string);
+
 		}
 
 		// pascalCase

@@ -2,6 +2,8 @@
 
 namespace Agility;
 
+use Agility\Configuration\Environment;
+
 	class Application {
 
 		protected $environment;
@@ -16,7 +18,8 @@ namespace Agility;
 
 		protected $settings;
 
-		private $dbEngine;
+		private $_dbEngine;
+		private $_configuration;
 
 		function __construct() {
 
@@ -28,8 +31,29 @@ namespace Agility;
 
 		}
 
-		function configure($callback) {
+		static function configure($callback) {
 			($callback->bindTo($this))();
+		}
+
+		function __set($key, $value) {
+			$this->_configuration[$key] = $value;
+		}
+
+		function __get($key) {
+			return $this->getConfiguration($key);
+		}
+
+		function getConfiguration($key) {
+
+			if (!isset($key)) {
+				throw new Exception\PropertyNotFoundException("Application", $key);
+			}
+			return $this->_configuration[$key];
+
+		}
+
+		function getAllConfiguration() {
+			return $this->_configuration;
 		}
 
 		function run() {
@@ -42,8 +66,10 @@ namespace Agility;
 		protected function initialize() {
 
 			if (!$this->noDatabase) {
-				$this->dbEngine = Data\Initializer::getSharedInstance($this->environment);
+				$this->_dbEngine = Data\Initializer::getSharedInstance($this->environment);
 			}
+
+			$this->loadUserConfiguration();
 
 			$this->setupPluginSystem();
 
@@ -116,6 +142,14 @@ namespace Agility;
 
 		}
 
+		private function loadUserConfiguration() {
+
+			if (file_exists($this->filePaths->appFile)) {
+				require_once $this->filePaths->appFile;
+			}
+
+		}
+
 		private function setupDatabase() {
 
 			if ($this->noDatabase) {
@@ -123,10 +157,10 @@ namespace Agility;
 			}
 
 			if (file_exists($this->filePaths->dbFileJson)) {
-				return $this->dbEngine->readDatabaseConfig($this->filePaths->dbFileJson);
+				return $this->_dbEngine->readDatabaseConfig($this->filePaths->dbFileJson);
 			}
 			else if (file_exists($this->filePaths->dbFileYaml)) {
-				return $this->dbEngine->readDatabaseConfig($this->filePaths->dbFileYaml, false);
+				return $this->_dbEngine->readDatabaseConfig($this->filePaths->dbFileYaml, false);
 			}
 			else {
 				Logging\Logger::log("Database initialization error: Database configuration file not found.", Logging\Severity::Notice);

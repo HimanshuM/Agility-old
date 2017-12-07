@@ -26,6 +26,8 @@
 			echo "<pre>";
 			echo json_encode(App\Models\User::findBy("status", 1), JSON_PRETTY_PRINT);
 
+			echo Agility\Extensions\String\Str::camelCase("user_login_method");
+
 		}
 
 	}

@@ -5,7 +5,7 @@ namespace Plugins\Logger;
 use Agility\Plugin\Plugin;
 use Agility\Logging;
 use Agility\Logging\Severity;
-use Agility\Environment;
+use Agility\Configuration\Environment;
 
 	class Logger extends Plugin implements Logging\ILogger {
 

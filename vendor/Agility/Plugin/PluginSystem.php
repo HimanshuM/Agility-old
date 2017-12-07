@@ -2,6 +2,10 @@
 
 namespace Agility\Plugin;
 
+use Exception;
+use Agility\Logging\Severity;
+use Agility\Logging\Logger;
+
 	class PluginSystem {
 
 		public static $environment;
@@ -35,7 +39,7 @@ namespace Agility\Plugin;
 
 			}
 			else {
-				\Agility\Logging\Logger::log("Plugin load error: plugin loader not found at path '$path'. Plugin will be skipped.", \Agility\Logging\Severity::Notice);
+				Logger::log("Plugin load error: plugin loader not found at path '$path'. Plugin will be skipped.", Severity::Notice);
 			}
 
 		}
@@ -44,7 +48,7 @@ namespace Agility\Plugin;
 
 			if (!class_exists($pluginName, false) || get_parent_class($pluginName) !== "Agility\Plugin\Plugin") {
 
-				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", \Agility\Logging\Severity::Warning);
+				Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", Severity::Warning);
 				return;
 
 			}
@@ -54,7 +58,7 @@ namespace Agility\Plugin;
 			}
 			catch (Exception $e) {
 
-				\Agility\Logging\Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", \Agility\Logging\Severity::Warning);
+				Logger::log("Plugin initialization error: Could not initialize plugin '$pluginName'.", Severity::Warning);
 				return;
 
 			}
