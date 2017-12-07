@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\String;
+namespace Agility\Extensions\String;
 
 	class Str {
 
@@ -25,6 +25,7 @@ namespace Agility\String;
 			}
 
 			return $string;
+
 		}
 
 	}

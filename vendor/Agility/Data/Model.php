@@ -3,13 +3,15 @@
 namespace Agility\Data;
 
 use DateTime;
+use Iterator;
+use JsonSerializable;
 use Agility\Data\Query\Ordering;
 use Agility\Data\Query\Query;
 use Agility\Data\Query\RawQuery;
 use Agility\Data\Query\WhereClause;
-use Agility\String\Str;
+use Agility\Extensions\String\Str;
 
-	class Model {
+	class Model implements Iterator, JsonSerializable{
 
 		protected $tableName;
 		protected $primaryKey;
@@ -28,6 +30,8 @@ use Agility\String\Str;
 
 		private $_isDirty;
 		private $_freshObject;
+
+		private $_pointer;
 
 		function __construct($empty = false) {
 
@@ -188,6 +192,37 @@ use Agility\String\Str;
 
 		function isFreshObject() {
 			return $this->_freshObject;
+		}
+
+		/* Iterator overrides */
+		function rewind() {
+			$this->_pointer = 0;
+		}
+
+		function valid() {
+			return $this->_pointer < count($this->_prototype->enumerate());
+		}
+
+		function key() {
+			return array_keys($this->_prototype->enumerate())[$this->_pointer];
+		}
+
+		function current() {
+			return $this->getAttribute(array_keys($this->_prototype->enumerate())[$this->_pointer]);
+		}
+
+		function next() {
+			$this->_prototype++;
+		}
+
+		/* JsonSerializable override */
+		function jsonSerialize() {
+			return $this->_prototype->enumerate();
+		}
+
+		/* var_dump override */
+		function __debugInfo() {
+			return $this->_prototype->enumerate();
 		}
 
 		private function initialize() {

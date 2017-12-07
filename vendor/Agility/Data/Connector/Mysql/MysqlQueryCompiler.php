@@ -82,8 +82,16 @@ namespace Agility\Data\Connector\Mysql;
 					$where = [];
 					foreach ($this->query->where as $wheres) {
 
-						$where[] = $wheres->attribute.$wheres->operator.":".$wheres->attribute;
-						$params[":".$where->attribute] = $wheres->value;
+						if (is_array($wheres->value)) {
+
+							$wheres->operator = "IN";
+							$params[":".$where->attribute] = "(".implode(", ", $wheres->value).")";
+
+						}
+						else {
+							$params[":".$wheres->attribute] = $wheres->value;
+						}
+						$where[] = $wheres->attribute." ".$wheres->operator." :".$wheres->attribute;
 
 					}
 					$where = implode(" AND ", $where);
@@ -91,8 +99,16 @@ namespace Agility\Data\Connector\Mysql;
 				}
 				else {
 
-					$where = $this->query->where->attribute.$this->query->where->operator.":".$this->query->where->attribute;
-					$params[":".$this->query->where->attribute] = $this->query->where->value;
+					if (is_array($this->query->where->value)) {
+
+						$this->query->where->operator = "IN";
+						$params[":".$this->query->where->attribute] = "(".implode(", ", $this->query->where->value).")";
+
+					}
+					else {
+						$params[":".$this->query->where->attribute] = $this->query->where->value;
+					}
+					$where = $this->query->where->attribute." ".$this->query->where->operator." :".$this->query->where->attribute;
 
 				}
 

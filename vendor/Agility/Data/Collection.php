@@ -59,8 +59,13 @@ use Agility\Exception\PropertyNotFoundException;
 			$this->_pointer++;
 		}
 
-		/* JsonSerializable overrides */
-		function jsonSerializable() {
+		/* JsonSerializable override */
+		function jsonSerialize() {
+			return $this->_attributes;
+		}
+
+		/* var_dump override */
+		function __debugInfo() {
 			return $this->_attributes;
 		}
 

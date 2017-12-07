@@ -24,7 +24,7 @@
 
 			// $user->save();
 			echo "<pre>";
-			App\Models\User::deepSearch("himanshu");
+			echo json_encode(App\Models\User::findBy("status", 1), JSON_PRETTY_PRINT);
 
 		}
 
