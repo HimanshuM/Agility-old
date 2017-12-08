@@ -2,7 +2,7 @@
 
 namespace Agility\Data;
 
-use Agility\Environment;
+use Agility\Configuration\Environment;
 use Agility\Logging;
 
 	class Initializer {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility;
+namespace Agility\Configuration;
 
 use Agility\Extensions\Enum;
 
