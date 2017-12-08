@@ -2,7 +2,7 @@
 
 	Application::configure(function() {
 
-		var_dump($this);
+		// var_dump($this);
 
 	});
 

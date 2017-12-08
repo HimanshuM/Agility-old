@@ -21,6 +21,8 @@ use Agility\Configuration\Environment;
 		private $_dbEngine;
 		private $_configuration;
 
+		private static $_thisInstance;
+
 		function __construct() {
 
 			$this->setEnvironment();
@@ -31,8 +33,21 @@ use Agility\Configuration\Environment;
 
 		}
 
+		static function getApplicationInstance() {
+			return self::$_thisInstance;
+		}
+
 		static function configure($callback) {
-			($callback->bindTo($this))();
+			($callback->bindTo(self::$_thisInstance))();
+		}
+
+		function isCli() {
+
+			if (isset($_SERVER["argc"]) && is_numeric($_SERVER["argc"]) && (substr(PHP_SAPI, 0, 3) == "cli") && (substr(php_sapi_name(), 0, 3) == "cli")) {
+				return true;
+			}
+			return false;
+
 		}
 
 		function __set($key, $value) {
@@ -57,25 +72,26 @@ use Agility\Configuration\Environment;
 		}
 
 		function run() {
-
-			// Logging\Logger::log("Yay!!");
-			$this->test();
-
+			(Request\RequestDispatch::getSharedInstance())->processRequest();
 		}
 
 		protected function initialize() {
 
+			self::$_thisInstance = &$this;
+
 			if (!$this->noDatabase) {
 				$this->_dbEngine = Data\Initializer::getSharedInstance($this->environment);
 			}
-
-			$this->loadUserConfiguration();
 
 			$this->setupPluginSystem();
 
 			if ($this->setupDatabase() == false) {
 				return false;
 			}
+
+			$this->loadUserConfiguration();
+
+			$this->loadCustomMimeTypes();
 
 			return true;
 
@@ -139,14 +155,7 @@ use Agility\Configuration\Environment;
 			$this->filePaths->dbFileYaml = $this->filePaths->configDir."/db.yaml";
 			$this->filePaths->environmentFile = $this->filePaths->configDir."/environment.php";
 			$this->filePaths->routesFile = $this->filePaths->configDir."/routes.php";
-
-		}
-
-		private function loadUserConfiguration() {
-
-			if (file_exists($this->filePaths->appFile)) {
-				require_once $this->filePaths->appFile;
-			}
+			$this->filePaths->mimeTypesFile = $this->filePaths->configDir."/mime_types.php";
 
 		}
 
@@ -176,6 +185,22 @@ use Agility\Configuration\Environment;
 
 			if (!$this->pluginSystemDisabled) {
 				Plugin\PluginSystem::setup($this->filePaths->pluginsDir);
+			}
+
+		}
+
+		private function loadUserConfiguration() {
+
+			if (file_exists($this->filePaths->appFile)) {
+				require_once $this->filePaths->appFile;
+			}
+
+		}
+
+		private function loadCustomMimeTypes() {
+
+			if (file_exists($this->filePaths->mimeTypesFile)) {
+				require_once $this->filePaths->mimeTypesFile;
 			}
 
 		}
