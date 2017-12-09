@@ -79,15 +79,11 @@ use Agility\Configuration\Environment;
 
 			self::$_thisInstance = &$this;
 
-			if (!$this->noDatabase) {
-				$this->_dbEngine = Data\Initializer::getSharedInstance($this->environment);
-			}
-
-			$this->setupPluginSystem();
-
 			if ($this->setupDatabase() == false) {
 				return false;
 			}
+
+			$this->setupPluginSystem();
 
 			$this->loadUserConfiguration();
 
@@ -164,6 +160,8 @@ use Agility\Configuration\Environment;
 			if ($this->noDatabase) {
 				return true;
 			}
+
+			$this->_dbEngine = Data\Initializer::getSharedInstance($this->environment);
 
 			if (file_exists($this->filePaths->dbFileJson)) {
 				return $this->_dbEngine->readDatabaseConfig($this->filePaths->dbFileJson);

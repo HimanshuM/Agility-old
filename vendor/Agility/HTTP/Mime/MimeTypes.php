@@ -29,7 +29,7 @@ use Agility\Extensions\Enum;
 
 		}
 
-		function __get($mimeType) {
+		static function __callStatic($mimeType, $args = []) {
 
 			foreach (self::$_mimeTypes as $acceptString => $name) {
 

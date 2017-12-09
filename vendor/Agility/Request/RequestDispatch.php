@@ -12,10 +12,10 @@ use Agility\Application;
 
 		}
 
-		static function getSharedInstance($mimeTypesFile = "") {
+		static function getSharedInstance() {
 
 			if (is_null(self::$_sharedInstance)) {
-				self::$_sharedInstance = new RequestDispatch($mimeTypesFile);
+				self::$_sharedInstance = new RequestDispatch();
 			}
 
 			return self::$_sharedInstance;
@@ -57,8 +57,6 @@ use Agility\Application;
 		private function resolveRequest($method, $uri, $acceptHeader) {
 
 			$request = new Request($method, $uri, $acceptHeader);
-			echo "<pre>";
-			var_dump($request->preferredContentType->xml);
 
 			// $route = (Routes::getSharedInstance())->getRequestHandler($uri);
 

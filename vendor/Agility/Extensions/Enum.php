@@ -19,6 +19,10 @@ namespace Agility\Extensions;
 
 		}
 
+		function __toString() {
+			return "".$this->_internal;
+		}
+
 		function toString() {
 			return "".$this->_internal;
 		}
