@@ -2,7 +2,22 @@
 
 	Agility\Routing\Routes::map(function() {
 
-		$this->routes("user");
+		$this->prefix("accounts", function() {
+			$this->resources("courses");
+		});
+
+		$this->resources("users");
+		$this->get("/", "home#index");
+
+		$this->resources("students", function() {
+			$this->namespace("admin", function() {
+				$this->resources("enrolments");
+			});
+		});
+
+		$this->scoped("admin", function() {
+			$this->resources("courses");
+		});
 
 	});
 

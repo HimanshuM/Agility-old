@@ -89,6 +89,8 @@ use Agility\Configuration\Environment;
 
 			$this->loadCustomMimeTypes();
 
+			$this->loadRoutes();
+
 			return true;
 
 		}
@@ -199,6 +201,16 @@ use Agility\Configuration\Environment;
 
 			if (file_exists($this->filePaths->mimeTypesFile)) {
 				require_once $this->filePaths->mimeTypesFile;
+			}
+
+		}
+
+		private function loadRoutes() {
+
+			HTTP\Controller::$controllersDir = $this->filePaths->controllersDir;
+
+			if (file_exists($this->filePaths->routesFile)) {
+				require_once $this->filePaths->routesFile;
 			}
 
 		}

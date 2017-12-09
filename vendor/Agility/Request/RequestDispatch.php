@@ -3,6 +3,7 @@
 namespace Agility\Request;
 
 use Agility\Application;
+use Agility\HTTP\Controller;
 
 	class RequestDispatch {
 
@@ -50,7 +51,7 @@ use Agility\Application;
 
 			$acceptHeader = $_SERVER["HTTP_ACCEPT"];
 
-			$this->resolveRequest($method, $uri, $acceptHeader);
+			$this->resolveRequest(strtolower($method), $uri, $acceptHeader);
 
 		}
 
@@ -58,14 +59,31 @@ use Agility\Application;
 
 			$request = new Request($method, $uri, $acceptHeader);
 
-			// $route = (Routes::getSharedInstance())->getRequestHandler($uri);
+			// echo json_encode((\Agility\Routing\Routes::getSharedInstance())->getAllRoutes());
+
+			$route = (\Agility\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method);
+
+			$this->invokeRequestHandler($route, $request);
 
 		}
 
-		private function invokeRequestHandler($route) {
+		private function invokeRequestHandler($route, $request) {
 
 			if ($route === false) {
 				// Invoke 404 sequence
+			}
+			else {
+
+				$request->params = $route->params;
+
+				$controller = Controller::instantiateController($route->controller);
+				if ($controller === false) {
+					echo "HTTP/1.1 500";
+					return;
+				}
+
+				$controller->execute($route->action, $request);
+
 			}
 
 		}
