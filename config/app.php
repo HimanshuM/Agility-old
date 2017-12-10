@@ -1,8 +1,10 @@
 <?php
 
+use Agility\Services\MessageQueue\Server\Server;
+
 	Application::configure(function() {
 
-		// var_dump($this);
+		Server::initializeMessageQueueServer("", "mqs");
 
 	});
 

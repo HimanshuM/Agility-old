@@ -33,7 +33,7 @@ use Agility\Extensions\Enum;
 
 		}
 
-		static mimeTypeFromExtension($ext) {
+		static function mimeTypeFromExtension($ext) {
 
 			if (isset(self::$_extMimeTypes[$ext])) {
 				return self::$_extMimeTypes[$ext];

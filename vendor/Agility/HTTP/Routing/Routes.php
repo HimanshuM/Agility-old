@@ -28,9 +28,9 @@ namespace Agility\HTTP\Routing;
 
 		}
 
-		static function map($callback) {
+		static function map($callback, $baseResource = "", $baseNamespace = "") {
 
-			$routeBuilder = new RouteBuilder;
+			$routeBuilder = new RouteBuilder($baseResource, $baseNamespace);
 			($callback->bindTo($routeBuilder))();
 
 			$obj = self::getSharedInstance();
@@ -53,6 +53,8 @@ namespace Agility\HTTP\Routing;
 			else {
 
 				$tree = &$this->routes[$method];
+				$params = [];
+				$routeNotFound = false;
 
 				$uriFragments = explode("/", trim($uri, "/ \t\r\n"));
 				array_unshift($uriFragments, "/");
@@ -67,7 +69,14 @@ namespace Agility\HTTP\Routing;
 						$params[] = $fragment;
 
 					}
+					else {
+						return false;
+					}
 
+				}
+
+				if (isset($tree[0]->constraints["domain"]) && ($tree[0]->constraints["domain"] !== $_SERVER["HTTP_HOST"])) {
+					return false;
 				}
 
 				$route = $this->bindParamsFromUri($tree[0], $params);
@@ -94,7 +103,7 @@ namespace Agility\HTTP\Routing;
 
 		private function bindParamsFromUri($route, $params) {
 
-			$binding;
+			$binding = [];
 			for ($i=0; $i < count($params); $i++) {
 				$binding[$route->params[$i]] = $params[$i];
 			}

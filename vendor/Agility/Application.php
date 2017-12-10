@@ -207,8 +207,6 @@ use Agility\Configuration\Environment;
 
 		private function loadRoutes() {
 
-			HTTP\Controller::$controllersDir = $this->filePaths->controllersDir;
-
 			if (file_exists($this->filePaths->routesFile)) {
 				require_once $this->filePaths->routesFile;
 			}

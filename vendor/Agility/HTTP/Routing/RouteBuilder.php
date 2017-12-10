@@ -10,11 +10,18 @@ use Exception;
 		public $routes = [];
 
 		private $_baseResource;
-		private $_baseNamespace;
+		public $_baseNamespace;
 
-		function __construct($baseResource = "/", $baseNamespace = "") {
+		function __construct($baseResource = "", $baseNamespace = "") {
 
+			if ($baseResource == "") {
+				$baseResource = "/";
+			}
 			$this->_baseResource = $baseResource;
+
+			if ($baseNamespace == "") {
+				$baseNamespace = "App\\Controllers";
+			}
 			$this->_baseNamespace = $baseNamespace;
 
 		}
@@ -33,7 +40,7 @@ use Exception;
 		function namespace($namespace, Closure $callback) {
 
 			$prefix = $this->normalizePath($namespace);
-			$builder = new RouteBuilder($prefix, $namespace);
+			$builder = new RouteBuilder($prefix, $this->_baseNamespace."\\".trim($namespace, "\\"));
 			($callback->bindTo($builder))();
 			$this->routes = array_merge($this->routes, $builder->routes);
 
@@ -42,7 +49,7 @@ use Exception;
 		// Handlers with no prefix but placed inside a namespace
 		function scoped($scope, Closure $callback) {
 
-			$builder = new RouteBuilder("/", $scope);
+			$builder = new RouteBuilder("/", $this->_baseNamespace."\\".trim($scope, "\\"));
 			($callback->bindTo($builder))();
 			$this->routes = array_merge($this->routes, $builder->routes);
 
@@ -324,7 +331,7 @@ use Exception;
 			$route->controller = $handler[0];
 			$route->action = $handler[1];
 			$route->params = $params;
-			$route->format = $constraints["format"] ?? "";
+			$route->constraints = $constraints;
 
 			return $route;
 

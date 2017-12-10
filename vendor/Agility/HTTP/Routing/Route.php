@@ -10,7 +10,7 @@ namespace Agility\HTTP\Routing;
 		public $controller;
 		public $action;
 		public $params;
-		public $format;
+		public $constraints;
 
 	}
 

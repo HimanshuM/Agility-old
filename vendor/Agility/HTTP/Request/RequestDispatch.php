@@ -59,9 +59,15 @@ use Agility\HTTP\Controller;
 
 			$request = new Request($method, $uri, $acceptHeader);
 
-			// echo json_encode((\Agility\Routing\Routes::getSharedInstance())->getAllRoutes());
+			// echo json_encode((\Agility\HTTP\Routing\Routes::getSharedInstance())->getAllRoutes());
 
-			$route = (\Agility\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method);
+			if (($route = (\Agility\HTTP\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method)) === false) {
+				// Invoke 404 sequence
+				echo "HTTP/1.1 404";
+				return;
+			}
+
+			$request->loadRequestParameters($method, $route->params);
 
 			$this->invokeRequestHandler($route, $request);
 
@@ -69,23 +75,18 @@ use Agility\HTTP\Controller;
 
 		private function invokeRequestHandler($route, $request) {
 
-			if ($route === false) {
-				// Invoke 404 sequence
-			}
-			else {
-
-				$request->params = $route->params;
-
-				$controller = Controller::instantiateController($route->controller);
-				if ($controller === false) {
-					echo "HTTP/1.1 500";
-					return;
-				}
-
-				$controller->execute($route->action, $request);
-
+			$controller = $this->instantiateController($route->controller, $request);
+			if ($controller === false) {
+				echo "HTTP/1.1 500";
+				return;
 			}
 
+			$controller->execute($route->action, $request);
+
+		}
+
+		private function instantiateController($controller) {
+			return new $controller;
 		}
 
 	}

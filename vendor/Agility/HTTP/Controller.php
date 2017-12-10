@@ -9,33 +9,11 @@ use Agility\HTTP\Response\Response;
 		protected $request;
 		protected $response;
 
-		public static $controllersDir;
-
 		private $_beforeSubscribers = [];
 		private $_afterSubscribers = [];
 
 		function __construct() {
-			$response = new Response;
-		}
-
-		static function instantiateController($controller) {
-
-			if (!self::controllerExists($controller)) {
-				return false;
-			}
-
-			require_once self::getControllerPath($controller);
-			$controller = "app\\controllers\\".$controller;
-			return new $controller;
-
-		}
-
-		private static function controllerExists($controller) {
-			return file_exists(self::getControllerPath($controller));
-		}
-
-		private static function getControllerPath($controller) {
-			return self::$controllersDir."/".str_replace("\\", "/", $controller).".php";
+			$this->response = new Response;
 		}
 
 		function beforeAction() {
@@ -98,6 +76,10 @@ use Agility\HTTP\Response\Response;
 				}
 
 			}
+
+		}
+
+		private function executeActionSubscribers($trigger, $action) {
 
 		}
 

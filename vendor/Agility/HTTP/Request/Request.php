@@ -24,6 +24,8 @@ use Agility\HTTP\Routing\Route;
 
 			$this->compileAcceptHeader($acceptHeader);
 
+			$this->params = new RequestParameters;
+
 			$this->header = getallheaders();
 
 		}
@@ -34,6 +36,21 @@ use Agility\HTTP\Routing\Route;
 
 		function getAcceptableContentTypes() {
 			return $this->acceptableContentTypes;
+		}
+
+		function loadRequestParameters($method, $routeParams = []) {
+
+			$this->params->get = $_GET ?? [];
+			$this->params->post = $_POST ?? [];
+
+			if (in_array($method, ["put", "patch", "delete"])) {
+				parse_str(file_get_contents("php://input"), $this->params->{$method});
+			}
+
+			foreach ($routeParams as $key => $value) {
+				$this->params->get[$key] = $value;
+			}
+
 		}
 
 		private function compileAcceptHeader($acceptHeader) {

@@ -1,6 +1,6 @@
 <?php
 
-	Agility\Routing\Routes::map(function() {
+	Agility\HTTP\Routing\Routes::map(function() {
 
 		$this->prefix("accounts", function() {
 			$this->resources("courses");
@@ -16,7 +16,7 @@
 		});
 
 		$this->scoped("admin", function() {
-			$this->resources("courses");
+			$this->resources("subscribers");
 		});
 
 	});
