@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\Routing;
+namespace Agility\HTTP\Routing;
 
 	class TreeBuilder {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\Response;
+namespace Agility\HTTP\Response;
 
 	class Response {
 

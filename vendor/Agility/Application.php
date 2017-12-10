@@ -72,7 +72,7 @@ use Agility\Configuration\Environment;
 		}
 
 		function run() {
-			(Request\RequestDispatch::getSharedInstance())->processRequest();
+			(HTTP\Request\RequestDispatch::getSharedInstance())->processRequest();
 		}
 
 		protected function initialize() {

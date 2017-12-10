@@ -1,10 +1,10 @@
 <?php
 
-namespace Agility\Request;
+namespace Agility\HTTP\Request;
 
 use Agility\HTTP\Mime\MimeTypes;
-use Agility\Routing\Routes;
-use Agility\Routing\Route;
+use Agility\HTTP\Routing\Routes;
+use Agility\HTTP\Routing\Route;
 
 	class Request {
 

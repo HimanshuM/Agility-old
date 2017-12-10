@@ -1,8 +1,9 @@
 <?php
 
-namespace Agility\Routing;
+namespace Agility\HTTP\Routing;
 
 use Closure;
+use Exception;
 
 	class RouteBuilder {
 

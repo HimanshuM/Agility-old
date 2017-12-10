@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\Request;
+namespace Agility\HTTP\Request;
 
 use Agility\Application;
 use Agility\HTTP\Controller;

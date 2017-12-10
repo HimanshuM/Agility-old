@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\Request;
+namespace Agility\HTTP\Request;
 
 use Agility\HTTP\Mime\MimeTypes;
 

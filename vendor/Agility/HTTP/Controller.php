@@ -2,7 +2,7 @@
 
 namespace Agility\HTTP;
 
-use Agility\Response\Response;
+use Agility\HTTP\Response\Response;
 
 	class Controller {
 
