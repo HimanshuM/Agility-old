@@ -15,6 +15,38 @@ use Agility\Extensions\Enum;
 		const Csv = "text/csv";
 		const Zip = "application/zip";
 
+		static function register($acceptString, $name) {
+
+			if (!isset(self::$_mimeTypes[$acceptString])) {
+				self::$_mimeTypes[$acceptString] = $name;
+			}
+
+		}
+
+		static function __callStatic($mimeType, $args = []) {
+
+			foreach (self::$_mimeTypes as $acceptString => $name) {
+
+				if ($name == $mimeType) {
+					return $acceptString;
+				}
+
+			}
+
+			throw new Exception("No Mime type is registered with name $mimeType", 1);
+
+		}
+
+		static mimeTypeFromExtension($ext) {
+
+			if (isset(self::$_extMimeTypes[$ext])) {
+				return self::$_extMimeTypes[$ext];
+			}
+
+			return false;
+
+		}
+
 		private static $_mimeTypes = [
 			"text/html" => "html",
 			"application/json" => "json",
@@ -667,32 +699,6 @@ use Agility\Extensions\Enum;
 			"zoo" => "application/octet-stream",
 			"zsh" => "text/x-script.zsh",
 		];
-
-		static function register($acceptString, $name) {
-
-			if (!isset(self::$_mimeTypes[$acceptString])) {
-				self::$_mimeTypes[$acceptString] = $name;
-			}
-
-		}
-
-		static function __callStatic($mimeType, $args = []) {
-
-			foreach (self::$_mimeTypes as $acceptString => $name) {
-
-				if ($name == $mimeType) {
-					return $acceptString;
-				}
-
-			}
-
-			throw new Exception("No Mime type is registered with name $mimeType", 1);
-
-		}
-
-		static mimeTypeFromExtension($ext) {
-
-		}
 
 	}
 
