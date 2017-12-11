@@ -1,10 +1,10 @@
 <?php
 
-use Agility\Services\MessageQueue\Server\Server;
+use Agility\Services\MessageQueue\MQ;
 
 	Application::configure(function() {
 
-		Server::initializeMessageQueueServer("", "mqs");
+		MQ::initialize("agility.com", "mqs");
 
 	});
 

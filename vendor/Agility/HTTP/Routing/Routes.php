@@ -75,6 +75,10 @@ namespace Agility\HTTP\Routing;
 
 				}
 
+				if (!isset($tree[0])) {
+					return false;
+				}
+
 				if (isset($tree[0]->constraints["domain"]) && ($tree[0]->constraints["domain"] !== $_SERVER["HTTP_HOST"])) {
 					return false;
 				}
@@ -105,7 +109,7 @@ namespace Agility\HTTP\Routing;
 
 			$binding = [];
 			for ($i=0; $i < count($params); $i++) {
-				$binding[$route->params[$i]] = $params[$i];
+				$binding[trim($route->params[$i], ":")] = $params[$i];
 			}
 
 			$route->params = $binding;

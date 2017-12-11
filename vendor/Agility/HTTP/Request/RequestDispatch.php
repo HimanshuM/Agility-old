@@ -46,8 +46,12 @@ use Agility\HTTP\Controller;
 
 		private function parseHttpRequest() {
 
-			$uri = $_SERVER["REQUEST_URI"];
 			$method = $_SERVER["REQUEST_METHOD"];
+			$uri = $_SERVER["REQUEST_URI"];
+
+			if (strpos($uri, "?") !== false) {
+				$uri = explode("?", $uri)[0];
+			}
 
 			$acceptHeader = $_SERVER["HTTP_ACCEPT"];
 
@@ -61,9 +65,9 @@ use Agility\HTTP\Controller;
 
 			// echo json_encode((\Agility\HTTP\Routing\Routes::getSharedInstance())->getAllRoutes());
 
-			if (($route = (\Agility\HTTP\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method)) === false) {
+			if (empty($route = (\Agility\HTTP\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method))) {
 				// Invoke 404 sequence
-				echo "HTTP/1.1 404";
+				$this->sendPrematureResponse(404);
 				return;
 			}
 
@@ -77,7 +81,7 @@ use Agility\HTTP\Controller;
 
 			$controller = $this->instantiateController($route->controller, $request);
 			if ($controller === false) {
-				echo "HTTP/1.1 500";
+				$this->sendPrematureResponse(500);
 				return;
 			}
 
@@ -87,6 +91,14 @@ use Agility\HTTP\Controller;
 
 		private function instantiateController($controller) {
 			return new $controller;
+		}
+
+		private function sendPrematureResponse($httpCode) {
+
+			$response = new \Agility\HTTP\Response\Response;
+			$response->setStatus($httpCode);
+			$response->respond();
+
 		}
 
 	}

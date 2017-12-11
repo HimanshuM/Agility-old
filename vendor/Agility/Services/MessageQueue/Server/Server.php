@@ -9,6 +9,8 @@ use Agility\HTTP\Routing\Routes;
 		private $_hostname;
 		private $_listenUrl;
 
+		private $_handlers = [];
+
 		private static $_sharedInstance = null;
 
 		private function __construct($hostname, $listenUrl) {
@@ -35,6 +37,21 @@ use Agility\HTTP\Routing\Routes;
 
 		}
 
+		function registerHandler(IMQRequstHandler &$handler, $requestType) {
+			$this->_handlers[$requestType] = $handler;
+		}
+
+		function getHandlers($requestType = "") {
+
+			if ($requestType == "") {
+				return $this->_handlers;
+			}
+			else {
+				return $this->_handlers[$requestType] ?? [];
+			}
+
+		}
+
 		private function addRoute() {
 
 			Routes::map(function() {
@@ -45,7 +62,7 @@ use Agility\HTTP\Routing\Routes;
 					$constraints["domain"] = $temp->_hostname;
 				}
 
-				$this->put($temp->_listenUrl, "Listner#index", $constraints);
+				$this->post($temp->_listenUrl."/jobs/:job_id", "Listner#index", $constraints);
 
 			}, "/", "Agility\\Services\\MessageQueue\\Server");
 

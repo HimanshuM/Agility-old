@@ -17,7 +17,7 @@ use Agility\HTTP\Routing\Route;
 		public $preferredContentType;
 		public $acceptableContentTypes;
 
-		function __construct($method, $requestUri, $acceptHeader) {
+		function __construct($method = "", $requestUri = "", $acceptHeader = "") {
 
 			$this->method = $method;
 			$this->requestUri = $requestUri;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Agility\Services\Net\Asychronous;
+namespace Agility\Services\Net\Asynchronous;
 
 use Agility\HTTP\Request\Request;
 use Agility\Logging\Logger;
@@ -17,10 +17,20 @@ use Agility\Logging\Logger;
 		}
 
 		function setRequest(Request $request) {
+
+			if (empty($request)) {
+				throw new Exception("Request cannot be empty", 1);
+			}
+
 			$this->_request = $request;
+
 		}
 
 		function call() {
+
+			if (empty($this->_request)) {
+				throw new Exception("Request cannot be empty", 1);
+			}
 
 			$get = $this->constructGetData();
 			$post = $this->constructPostData();
@@ -75,7 +85,7 @@ use Agility\Logging\Logger;
 				if (is_array($value)) {
 					$value = implode(",", $value);
 				}
-				$get[$key] = urlencode($value);
+				$get[] = $key."=".urlencode($value);
 
 			}
 
@@ -91,7 +101,7 @@ use Agility\Logging\Logger;
 				if (is_array($value)) {
 					$value = implode(",", $value);
 				}
-				$post[$key] = urlencode($value);
+				$post[] = $key."=".urlencode($value);
 
 			}
 			return implode("&", $post);
@@ -101,13 +111,24 @@ use Agility\Logging\Logger;
 		private function getSocketParameters() {
 
 			$parts = parse_url($this->_request->requestUri);
+			if (empty($parts["host"])) {
+				$parts = parse_url("//".$this->_request->requestUri);
+			}
+
 			if (empty($parts["port"])) {
 
-				if ($parts["scheme"] == "http") {
-					$parts["port"] = "80";
+				if (!empty($parts["scheme"])) {
+
+					if ($parts["scheme"] == "http") {
+						$parts["port"] = "80";
+					}
+					else if ($parts["scheme"] == "https") {
+						$parts["port"] = "443";
+					}
+
 				}
-				else if ($parts["scheme"] == "https") {
-					$parts["port"] = "443";
+				else {
+					$parts["port"] = "80";
 				}
 
 			}
