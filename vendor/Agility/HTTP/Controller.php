@@ -9,6 +9,8 @@ use Agility\HTTP\Response\Response;
 		protected $request;
 		protected $response;
 
+		protected $error404Template;
+
 		private $_beforeSubscribers = [];
 		private $_afterSubscribers = [];
 
@@ -31,6 +33,10 @@ use Agility\HTTP\Response\Response;
 			$this->executeActionSubscribers("before", $action);
 			$this->$action();
 			$this->executeActionSubscribers("after", $action);
+
+		}
+
+		function render404() {
 
 		}
 
@@ -80,6 +86,26 @@ use Agility\HTTP\Response\Response;
 		}
 
 		private function executeActionSubscribers($trigger, $action) {
+
+			$methods = [];
+			if ($trigger == "before") {
+
+				if (!empty($this->_beforeSubscribers[$action])) {
+					$methods = $this->_beforeSubscribers[$action];
+				}
+
+			}
+			else {
+
+				if (!empty($this->_beforeSubscribers[$action])) {
+					$methods = $this->_beforeSubscribers[$action];
+				}
+
+			}
+
+			foreach ($methods as $method) {
+				$this->$method();
+			}
 
 		}
 
