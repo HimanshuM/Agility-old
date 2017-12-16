@@ -17,7 +17,7 @@ use Agility\HTTP\Routing\Route;
 		public $preferredContentType;
 		public $acceptableContentTypes;
 
-		function __construct($method = "", $requestUri = "", $acceptHeader = "") {
+		function __construct($method = "", $requestUri = "", $acceptHeader = "text/html") {
 
 			$this->method = $method;
 			$this->requestUri = $requestUri;
@@ -58,6 +58,15 @@ use Agility\HTTP\Routing\Route;
 			if (!empty($acceptHeader)) {
 
 				$acceptableContentTypes = ContentNegotiator::buildAcceptableContentArray($acceptHeader);
+
+				if (count($acceptableContentTypes) == 1) {
+
+					if ($acceptableContentTypes[0] == "*/*") {
+						array_unshift($acceptableContentTypes, "text/html");
+					}
+
+				}
+
 				foreach ($acceptableContentTypes as $accept) {
 					$this->acceptableContentTypes[] = new MimeTypes($accept);
 				}

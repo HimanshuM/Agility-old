@@ -157,7 +157,7 @@ namespace Agility\HTTP\Response;
 
 				}
 
-				if ($this->_body !== false) {
+				if ($this->_body !== false && !is_null($this->_body)) {
 					echo $this->_body;
 				}
 

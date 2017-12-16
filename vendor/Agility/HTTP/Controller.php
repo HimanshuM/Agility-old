@@ -2,9 +2,14 @@
 
 namespace Agility\HTTP;
 
+use Agility\Application;
 use Agility\HTTP\Response\Response;
+use Agility\HTTP\Mime\MimeTypes;
 
 	class Controller {
+
+		protected $applicationEnvironment;
+		protected $applicationDirectory;
 
 		protected $request;
 		protected $response;
@@ -14,8 +19,19 @@ use Agility\HTTP\Response\Response;
 		private $_beforeSubscribers = [];
 		private $_afterSubscribers = [];
 
+		private $_class;
+
 		function __construct() {
+
+			$app = Application::getApplicationInstance();
+
+			$this->applicationEnvironment = $app->environment;
+			$this->applicationDirectory = $app->applicationDir;
+
 			$this->response = new Response;
+
+			$this->_class = (new \ReflectionClass($this))->getShortName();
+
 		}
 
 		function beforeAction() {
@@ -31,13 +47,68 @@ use Agility\HTTP\Response\Response;
 			$this->request = $request;
 
 			$this->executeActionSubscribers("before", $action);
-			$this->$action();
+			$response = $this->$action();
 			$this->executeActionSubscribers("after", $action);
+
+			$this->render($this->_class."/".$action, $response);
 
 		}
 
-		function render404() {
+		function render($template, $data = null, $layout = true) {
 
+			if (is_null($template)) {
+
+				$this->renderCustom(MimeTypes::Html, null);
+				return;
+
+			}
+
+			$view = new Render\View((Application::getApplicationInstance())->getPath("viewsDir"));
+
+			if ($layout === true) {
+				$view->setLayout("shared/base");
+			}
+			else if ($layout === false) {
+				$view->setLayout(null);
+			}
+			else if (is_string($view)) {
+				$view->setLayout($layout);
+			}
+			else {
+				throw new Exception("Possible values for layout are 'true', 'false' or layout path.", 1);
+			}
+
+			$view->setView($template);
+
+			// Render the template
+			$data = $view->render($data);
+
+			$this->renderCustom(MimeTypes::Html, $data);
+
+		}
+
+		function renderCustom($mimeType, $data) {
+
+			static $invoked = false;
+
+			if ($invoked) {
+				return;
+			}
+
+			$invoked = true;
+
+			$this->response->setMimeType($mimeType);
+			$this->response->setBody($data);
+			$this->response->respond();
+
+		}
+
+		function render_404() {
+			(Routing\RouteDispatch::getSharedInstance())->softRedirect(404);
+		}
+
+		function render_500() {
+			(Routing\RouteDispatch::getSharedInstance())->softRedirect(500);
 		}
 
 		private function setActionSubscribers($trigger) {

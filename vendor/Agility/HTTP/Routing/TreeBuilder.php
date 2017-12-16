@@ -6,6 +6,8 @@ namespace Agility\HTTP\Routing;
 
 		static function buildTree($parent, $urlFragments, $n, $i, $finalObject) {
 
+			$urlFragments[$i] = (intval($urlFragments[$i]) ? "_".$urlFragments[$i] : $urlFragments[$i]);
+
 			if ($i == $n - 1) {
 				return array_merge($parent, [$urlFragments[$i] => [$finalObject]]);
 			}

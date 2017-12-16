@@ -6,9 +6,9 @@ use Agility\Configuration\Environment;
 
 	class Application {
 
-		protected $environment;
+		public $environment;
+		public $applicationDir;
 
-		protected $applicationDir;
 		protected $documentRoot;
 		protected $filePaths;
 		protected $cliOnlyApp = false;
@@ -71,6 +71,16 @@ use Agility\Configuration\Environment;
 			return $this->_configuration;
 		}
 
+		function getPath($id) {
+
+			if (!isset($this->filePaths->$id)) {
+				throw new Exception("No path present by identifier $id", 1);
+			}
+
+			return $this->filePaths->$id;
+
+		}
+
 		function run() {
 			(HTTP\Request\RequestDispatch::getSharedInstance())->processRequest();
 		}
@@ -82,6 +92,8 @@ use Agility\Configuration\Environment;
 			if ($this->setupDatabase() == false) {
 				return false;
 			}
+
+			$this->setErrorHandlerRoutine();
 
 			$this->setupPluginSystem();
 
@@ -177,6 +189,10 @@ use Agility\Configuration\Environment;
 
 			return true;
 
+		}
+
+		private function setErrorHandlerRoutine() {
+			HTTP\ErrorHandling\ErrorHandler::attachErrorRoutes();
 		}
 
 		private function setupPluginSystem() {

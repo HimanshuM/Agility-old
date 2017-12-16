@@ -63,6 +63,40 @@ use Exception;
 		 *	5: childResources: Closure; nested path
 		**/
 
+		function match($path, $handler, $methods = "all", $constraints = [], $routeName = "") {
+
+			$all = ["get", "post", "put", "patch", "delete"];
+
+			if ($methods == "all") {
+				$methods = $all;
+			}
+			else if (is_string($methods)) {
+
+				if (in_array($methods, $all)) {
+					$this->{$methods}($path, $handler, $constraints, $routeName);
+				}
+				else {
+					throw new Exception("Undefined method ".$methods.".", 1);
+				}
+
+			}
+			else if (!is_array($methods)) {
+				// We do not know what has been supplied as method...
+				throw new Exception("Invalid method supplied to match()", 1);
+			}
+
+			foreach ($methods as $method) {
+
+				if (!in_array($method, $all)) {
+					throw new Exception("Undefined method ".$methods.".", 1);
+				}
+
+				$this->{$method}($path, $handler, $constraints, $routeName);
+
+			}
+
+		}
+
 		function resources() {
 
 			if (func_num_args() < 1) {
@@ -108,23 +142,23 @@ use Exception;
 		}
 
 		function get() {
-			$this->_get[] = $this->constructPath("get", func_get_args());
+			$this->constructPath("get", func_get_args());
 		}
 
 		function post() {
-			$this->_post[] = $this->constructPath("post", func_get_args());
+			$this->constructPath("post", func_get_args());
 		}
 
 		function put() {
-			$this->_put[] = $this->constructPath("put", func_get_args());
+			$this->constructPath("put", func_get_args());
 		}
 
 		function patch() {
-			$this->_patch[] = $this->constructPath("patch", func_get_args());
+			$this->constructPath("patch", func_get_args());
 		}
 
 		function delete() {
-			$this->_delete[] = $this->constructPath("delete", func_get_args());
+			$this->constructPath("delete", func_get_args());
 		}
 
 		private function getValidActions($constraints) {

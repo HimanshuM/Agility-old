@@ -11,6 +11,10 @@ use Agility\Logging\Logger;
 			Logger::log(json_encode($this->request->params));
 		}
 
+		function edit() {
+			echo "Yes";
+		}
+
 	}
 
 ?>

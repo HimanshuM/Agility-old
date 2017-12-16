@@ -52,7 +52,7 @@ namespace Agility\HTTP\Routing;
 			}
 			else {
 
-				$tree = &$this->routes[$method];
+				$tree = $this->routes[$method];
 				$params = [];
 				$routeNotFound = false;
 

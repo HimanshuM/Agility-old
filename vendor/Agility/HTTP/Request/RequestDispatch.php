@@ -4,8 +4,11 @@ namespace Agility\HTTP\Request;
 
 use Agility\Application;
 use Agility\HTTP\Controller;
+use Agility\HTTP\ErrorHandling\ErrorHandler;
 
 	class RequestDispatch {
+
+		private $_acceptHeader;
 
 		private static $_sharedInstance;
 
@@ -34,11 +37,20 @@ use Agility\HTTP\Controller;
 
 		}
 
+		function softRedirect($location) {
+
+			$_SERVER["REQUEST_URI"] = "/".$location;
+			$this->parseHttpRequest();
+
+		}
+
 		private function parseCliRequest() {
 
 			$args = $_SERVER["argv"];
 			array_unshift($args);
 			$method = "GET";
+
+			$this->_acceptHeader = "text/html";
 
 			$this->resolveRequest($args, $method, null);
 
@@ -53,22 +65,23 @@ use Agility\HTTP\Controller;
 				$uri = explode("?", $uri)[0];
 			}
 
-			$acceptHeader = $_SERVER["HTTP_ACCEPT"];
+			$this->_acceptHeader = $_SERVER["HTTP_ACCEPT"] ?? "text/html";
 
-			$this->resolveRequest(strtolower($method), $uri, $acceptHeader);
+			$this->resolveRequest(strtolower($method), $uri);
 
 		}
 
-		private function resolveRequest($method, $uri, $acceptHeader) {
+		private function resolveRequest($method, $uri) {
 
-			$request = new Request($method, $uri, $acceptHeader);
+			$request = new Request($method, $uri, $this->_acceptHeader);
 
 			// echo json_encode((\Agility\HTTP\Routing\Routes::getSharedInstance())->getAllRoutes());
 
 			if (empty($route = (\Agility\HTTP\Routing\Routes::getSharedInstance())->getRequestHandler($uri, $method))) {
-				// Invoke 404 sequence
-				$this->sendPrematureResponse(404);
+
+				$this->handle(404, $method);
 				return;
+
 			}
 
 			$request->loadRequestParameters($method, $route->params);
@@ -79,18 +92,50 @@ use Agility\HTTP\Controller;
 
 		private function invokeRequestHandler($route, $request) {
 
-			$controller = $this->instantiateController($route->controller, $request);
-			if ($controller === false) {
-				$this->sendPrematureResponse(500);
-				return;
+			try {
+				$controller = $this->instantiateController($route->controller);
+			}
+			catch (Exception $e) {
+
+				ErrorHandler::catch($e);
+				$this->softRedirect(500);
+
 			}
 
-			$controller->execute($route->action, $request);
+			if ($controller === false) {
+
+				$this->handle(500, $method);
+				return;
+
+			}
+
+			try {
+				$controller->execute($route->action, $request);
+			}
+			catch (Exception $e) {
+
+				ErrorHandler::catch($e);
+				$this->softRedirect(500);
+
+			}
 
 		}
 
 		private function instantiateController($controller) {
 			return new $controller;
+		}
+
+		private function handle($statusCode, $method) {
+
+			if (empty($route = (\Agility\HTTP\Routing\Routes::getSharedInstance())->getRequestHandler("/_".$statusCode, $method))) {
+
+				$this->sendPrematureResponse(404);
+				return;
+
+			}
+
+			$this->invokeRequestHandler($route, (new Request($method, "/_".$statusCode, $this->_acceptHeader)));
+
 		}
 
 		private function sendPrematureResponse($httpCode) {
