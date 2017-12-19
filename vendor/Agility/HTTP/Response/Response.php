@@ -95,9 +95,23 @@ namespace Agility\HTTP\Response;
 
 		function respond() {
 
+			$this->sendHeaders(($this->_downloadFile !== false));
+
+			if ($this->_downloadFile === false) {
+
+				if ($this->_body !== false && !is_null($this->_body)) {
+					echo $this->_body;
+				}
+
+			}
+
+		}
+
+		private function sendHeaders($download = false) {
+
 			header("HTTP/1.1 ".$this->_statusCode);
 
-			if ($this->_downloadFile !== false) {
+			if ($download) {
 
 				header('Content-Description: File Transfer');
 				header('Content-Type: application/octet-stream');
@@ -155,10 +169,6 @@ namespace Agility\HTTP\Response;
 						header("Expires: ".$this->_expires);
 					}
 
-				}
-
-				if ($this->_body !== false && !is_null($this->_body)) {
-					echo $this->_body;
 				}
 
 			}

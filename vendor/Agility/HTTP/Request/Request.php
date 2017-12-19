@@ -14,8 +14,8 @@ use Agility\HTTP\Routing\Route;
 
 		public $header;
 
-		public $preferredContentType;
-		public $acceptableContentTypes;
+		public $preferredMimeType;
+		public $acceptableMimeTypes;
 
 		function __construct($method = "", $requestUri = "", $acceptHeader = "text/html") {
 
@@ -31,7 +31,7 @@ use Agility\HTTP\Routing\Route;
 		}
 
 		function getPreferredContentType() {
-			return $this->preferredContentType;
+			return $this->preferredMimeType;
 		}
 
 		function getAcceptableContentTypes() {
@@ -68,15 +68,15 @@ use Agility\HTTP\Routing\Route;
 				}
 
 				foreach ($acceptableContentTypes as $accept) {
-					$this->acceptableContentTypes[] = new MimeTypes($accept);
+					$this->acceptableMimeTypes[] = new MimeTypes($accept);
 				}
-				$this->preferredContentType = $this->acceptableContentTypes[0];
+				$this->preferredMimeType = $this->acceptableMimeTypes[0];
 
 			}
 			else {
 
-				$this->acceptableContentTypes = [];
-				$this->preferredContentType = null;
+				$this->acceptableMimeTypes = [];
+				$this->preferredMimeType = null;
 
 			}
 

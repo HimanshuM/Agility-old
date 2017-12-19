@@ -6,6 +6,22 @@ namespace Agility\Configuration;
 
 		private $data;
 
+		private static $_sharedInstance;
+
+		private function __construct() {
+
+		}
+
+		static function getSharedInstance() {
+
+			if (is_null(self::$_sharedInstance)) {
+				self::$_sharedInstance = new self;
+			}
+
+			return self::$_sharedInstance;
+
+		}
+
 		function __get($key) {
 
 			if (!isset($this->data[$key])) {

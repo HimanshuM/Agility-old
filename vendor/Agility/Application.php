@@ -3,11 +3,13 @@
 namespace Agility;
 
 use Agility\Configuration\Environment;
+use Agility\Configuration\Settings;
 
 	class Application {
 
 		public $environment;
 		public $applicationDir;
+		public $settings;
 
 		protected $documentRoot;
 		protected $filePaths;
@@ -16,14 +18,14 @@ use Agility\Configuration\Environment;
 		protected $noDatabase = false;
 		protected $pluginSystemDisabled = false;
 
-		protected $settings;
-
 		private $_dbEngine;
 		private $_configuration;
 
 		private static $_thisInstance;
 
 		function __construct() {
+
+			$this->settings = Settings::getSharedInstance();
 
 			$this->setEnvironment();
 
@@ -50,27 +52,6 @@ use Agility\Configuration\Environment;
 
 		}
 
-		function __set($key, $value) {
-			$this->_configuration[$key] = $value;
-		}
-
-		function __get($key) {
-			return $this->getConfiguration($key);
-		}
-
-		function getConfiguration($key) {
-
-			if (!isset($key)) {
-				throw new Exception\PropertyNotFoundException("Application", $key);
-			}
-			return $this->_configuration[$key];
-
-		}
-
-		function getAllConfiguration() {
-			return $this->_configuration;
-		}
-
 		function getPath($id) {
 
 			if (!isset($this->filePaths->$id)) {
@@ -93,7 +74,7 @@ use Agility\Configuration\Environment;
 				return false;
 			}
 
-			$this->setErrorHandlerRoutine();
+			$this->setupErrorHandlerRoutine();
 
 			$this->setupPluginSystem();
 
@@ -191,7 +172,7 @@ use Agility\Configuration\Environment;
 
 		}
 
-		private function setErrorHandlerRoutine() {
+		private function setupErrorHandlerRoutine() {
 			HTTP\ErrorHandling\ErrorHandler::attachErrorRoutes();
 		}
 
