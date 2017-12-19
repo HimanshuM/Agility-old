@@ -58,10 +58,6 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function render($template, $data = null, $layout = true) {
 
-			if ($this->_actionRendered) {
-				return;
-			}
-
 			if (is_null($template)) {
 
 				$this->renderCustom(MimeTypes::Html, null);
@@ -96,6 +92,10 @@ use Agility\HTTP\Mime\MimeTypes;
 		}
 
 		function renderCustom($mimeType, $data) {
+
+			if ($this->_actionRendered) {
+				return;
+			}
 
 			$this->_actionRendered = true;
 
