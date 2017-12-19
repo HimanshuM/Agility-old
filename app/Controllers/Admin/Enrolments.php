@@ -6,11 +6,14 @@ use Agility\HTTP\Controller;
 
 	class Enrolments extends Controller {
 
-		public $request;
+		function new() {
 
-		function edit() {
+		}
 
-			var_dump($this->request->params);
+		function create() {
+
+			var_dump($_POST);
+			$this->render(null);
 
 		}
 

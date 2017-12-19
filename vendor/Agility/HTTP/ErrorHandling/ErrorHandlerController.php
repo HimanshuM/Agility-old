@@ -12,15 +12,16 @@ use Agility\HTTP\Mime\MimeTypes;
 			$statusCode = trim($this->request->requestUri, "/");
 			$this->{"render".$statusCode}();
 
+			$this->render(null);
+
 		}
 
 		function render_404() {
 
 			$this->response->setStatus(404);
-			if ($this->request->preferredContentType == MimeTypes::Html) {
+			if ($this->request->preferredMimeType == MimeTypes::Html) {
 				$this->response->setBody("404 - Not found...");
 			}
-			$this->response->respond();
 
 		}
 

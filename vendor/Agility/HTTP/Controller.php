@@ -21,6 +21,8 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		private $_class;
 
+		private $_actionRendered = false;
+
 		function __construct() {
 
 			$app = Application::getApplicationInstance();
@@ -56,12 +58,18 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function render($template, $data = null, $layout = true) {
 
+			if ($this->_actionRendered) {
+				return;
+			}
+
 			if (is_null($template)) {
 
 				$this->renderCustom(MimeTypes::Html, null);
 				return;
 
 			}
+
+			$this->_actionRendered = true;
 
 			$view = new Render\View((Application::getApplicationInstance())->getPath("viewsDir"));
 
@@ -89,13 +97,7 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function renderCustom($mimeType, $data) {
 
-			static $invoked = false;
-
-			if ($invoked) {
-				return;
-			}
-
-			$invoked = true;
+			$this->_actionRendered = true;
 
 			$this->response->setMimeType($mimeType);
 			$this->response->setBody($data);

@@ -116,7 +116,8 @@ use Exception;
 			}
 			if ($actions["create"] == true) {
 				// POST resources/create
-				$this->post($resources."/create", $controller."#create", $constraints, $resources."_create");
+				// $this->post($resources."/create", $controller."#create", $constraints, $resources."_create");
+				$this->post($resources, $controller."#create", $constraints, $resources."_create");
 			}
 			if ($actions["show"] == true) {
 				// GET resources/:id
