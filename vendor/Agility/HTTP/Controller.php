@@ -14,7 +14,7 @@ use Agility\HTTP\Mime\MimeTypes;
 		protected $request;
 		protected $response;
 
-		protected $error404Template;
+		protected $viewPath;
 
 		private $_beforeSubscribers = [];
 		private $_afterSubscribers = [];
@@ -33,6 +33,8 @@ use Agility\HTTP\Mime\MimeTypes;
 			$this->response = new Response;
 
 			$this->_class = (new \ReflectionClass($this))->getShortName();
+
+			$this->viewPath = (Application::getApplicationInstance())->getPath("viewsDir");
 
 		}
 
@@ -67,7 +69,7 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->_actionRendered = true;
 
-			$view = new Render\View((Application::getApplicationInstance())->getPath("viewsDir"));
+			$view = new Render\View($this->viewPath);
 
 			if ($layout === true) {
 				$view->setLayout("shared/base");
