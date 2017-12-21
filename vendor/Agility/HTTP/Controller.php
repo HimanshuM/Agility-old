@@ -19,6 +19,8 @@ use Agility\HTTP\Mime\MimeTypes;
 		protected $sessionAutoInit;
 
 		protected $viewPath;
+		protected $jsPath;
+		protected $cssPath;
 
 		private $_beforeSubscribers = [];
 		private $_afterSubscribers = [];
@@ -45,6 +47,8 @@ use Agility\HTTP\Mime\MimeTypes;
 			}
 
 			$this->viewPath = (Application::getApplicationInstance())->getPath("viewsDir");
+			$this->jsPath = (Application::getApplicationInstance())->getPath("jsDir");
+			$this->cssPath = (Application::getApplicationInstance())->getPath("cssDir");
 
 			$this->session = new Session;
 
@@ -100,7 +104,7 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->_actionRendered = true;
 
-			$view = new Render\View($this->viewPath);
+			$view = new Render\View($this->viewPath, $this->jsPath, $this->cssPath);
 
 			if ($layout === true) {
 				$view->setLayout("shared/base");
