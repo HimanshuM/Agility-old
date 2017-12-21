@@ -9,6 +9,8 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function renderErrorResponse() {
 
+			$this->viewPath = $this->applicationDirectory."/vendor/agility/http/errorhandling";
+
 			$statusCode = trim($this->request->requestUri, "/");
 			$this->{"render".$statusCode}();
 
