@@ -290,7 +290,7 @@ use Exception;
 
 			if (!empty($childResources)) {
 
-				$builder = new RouteBuilder($route);
+				$builder = new RouteBuilder($this->getParameterizedScopedPath($route));
 				($childResources->bindTo($builder))();
 				$this->routes = array_merge($this->routes, $builder->routes);
 
@@ -378,6 +378,29 @@ use Exception;
 			$action = array_pop($segments);
 
 			return [implode("\\", $segments), $action];
+		}
+
+		private function getParameterizedScopedPath($route) {
+
+			$i = 0;
+			$pathSegments = [];
+
+			$segments = explode("/", $route->path);
+			foreach ($segments as $segment) {
+
+				if ($segment == ":param") {
+					$pathSegments[] = ":".Inflect::singularize($segments[$i - 1])."_id";
+				}
+				else {
+					$pathSegments[] = $segment;
+				}
+
+				$i++;
+
+			}
+
+			return implode("/", $pathSegments);
+
 		}
 
 	}
