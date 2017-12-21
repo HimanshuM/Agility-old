@@ -117,6 +117,9 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$view->setView($template);
 
+			// Add controller to data
+			$data["parent"] = $this;
+
 			// Render the template
 			$data = $view->render($data);
 
