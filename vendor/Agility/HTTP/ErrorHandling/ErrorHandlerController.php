@@ -9,7 +9,7 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function renderErrorResponse() {
 
-			$this->viewPath = $this->applicationDirectory."/vendor/agility/http/errorhandling";
+			$this->viewPath = $this->applicationDirectory."/public";
 
 			$statusCode = trim($this->request->requestUri, "/");
 			$this->{"render".$statusCode}();
@@ -20,16 +20,51 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function render_404() {
 
-			$this->response->setStatus(404);
 			if ($this->request->preferredMimeType == MimeTypes::Html) {
-				$this->response->setBody("404 - Not found...");
+
+				if (file_exists($this->viewPath."/404.html")) {
+
+					ob_start();
+					require_once $this->viewPath."/404.html";
+					$contents = ob_get_contents();
+					ob_end_clean();
+
+					$this->response->setBody($contents);
+
+				}
+				else {
+					$this->response->setBody("404 - Not found...");
+				}
+
+			}
+			else {
+				$this->response->setStatus(404);
 			}
 
 		}
 
 		function render_500() {
 
-			$this->response->setStatus(500);
+			if ($this->request->preferredMimeType == MimeTypes::Html) {
+
+				if (file_exists($this->viewPath."/500.html")) {
+
+					ob_start();
+					require_once $this->viewPath."/500.html";
+					$contents = ob_get_contents();
+					ob_end_clean();
+
+					$this->response->setBody($contents);
+
+				}
+				else {
+					$this->response->setStatus(500);
+				}
+
+			}
+			else {
+				$this->response->setStatus(500);
+			}
 
 		}
 
