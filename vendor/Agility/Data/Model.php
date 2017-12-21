@@ -4,6 +4,7 @@ namespace Agility\Data;
 
 use DateTime;
 use Iterator;
+use Serializable;
 use JsonSerializable;
 use Agility\Data\Query\Ordering;
 use Agility\Data\Query\Query;
@@ -11,7 +12,7 @@ use Agility\Data\Query\RawQuery;
 use Agility\Data\Query\WhereClause;
 use Agility\Extensions\String\Str;
 
-	class Model implements Iterator, JsonSerializable{
+	class Model implements Iterator, Serializable, JsonSerializable {
 
 		protected $tableName;
 		protected $primaryKey;
@@ -213,6 +214,15 @@ use Agility\Extensions\String\Str;
 
 		function next() {
 			$this->_prototype++;
+		}
+
+		/* Serializable overrides */
+		function serialize() {
+			return $this->_prototype->serialize();
+		}
+
+		function unserialize($prototype) {
+			$this->_prototype->unserialize();
 		}
 
 		/* JsonSerializable override */

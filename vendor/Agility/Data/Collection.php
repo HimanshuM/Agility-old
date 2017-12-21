@@ -3,10 +3,11 @@
 namespace Agility\Data;
 
 use Iterator;
+use Serializable;
 use JsonSerializable;
 use Agility\Exception\PropertyNotFoundException;
 
-	class Collection implements Iterator, JsonSerializable {
+	class Collection implements Iterator, Serializable, JsonSerializable {
 
 		private $_attributes;
 		private $_model;
@@ -57,6 +58,15 @@ use Agility\Exception\PropertyNotFoundException;
 
 		function next() {
 			$this->_pointer++;
+		}
+
+		/* Serializable overrides */
+		function serialize() {
+			return serialize($this->_attributes);
+		}
+
+		function unserialize($attributes) {
+			$this->_attributes = unserialize($attributes);
 		}
 
 		/* JsonSerializable override */
