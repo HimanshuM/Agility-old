@@ -6,11 +6,15 @@ namespace Agility\HTTP;
 
 		function __construct($name = false) {
 
-			if (!empty($name) && !is_string($name)) {
-				throw new Exception("Invalid argument supplied to Session::constructor", 1);
-			}
+			if (!empty($name)) {
 
-			session_name($name);
+				if (!is_string($name)) {
+					throw new Exception("Invalid argument supplied to Session::constructor", 1);
+				}
+
+				session_name($name);
+
+			}
 
 		}
 

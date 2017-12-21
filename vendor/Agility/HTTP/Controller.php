@@ -13,6 +13,10 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		protected $request;
 		protected $response;
+		protected $session;
+		protected $sessionName;
+		protected $sessionOptions;
+		protected $sessionAutoInit;
 
 		protected $viewPath;
 
@@ -42,6 +46,12 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->viewPath = (Application::getApplicationInstance())->getPath("viewsDir");
 
+			$this->session = new Session;
+
+			$this->sessionName = false;
+			$this->sessionOptions = false;
+			$this->sessionAutoInit = false;
+
 		}
 
 		function beforeAction() {
@@ -53,6 +63,21 @@ use Agility\HTTP\Mime\MimeTypes;
 		}
 
 		function execute($action, $request) {
+
+			if ($this->sessionAutoInit) {
+
+				if ($this->sessionName !== false) {
+
+					if (!is_array($this->sessionOptions)) {
+						$this->sessionOptions = [];
+					}
+					$this->sessionOptions["name"] = $this->sessionName;
+
+				}
+
+				$this->session->init($this->sessionOptions);
+
+			}
 
 			$this->request = $request;
 
