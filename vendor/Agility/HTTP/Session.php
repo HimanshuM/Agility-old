@@ -2,7 +2,9 @@
 
 namespace Agility\HTTP;
 
-	class Session {
+use JsonSerializable;
+
+	class Session implements JsonSerializable {
 
 		function __construct($name = false) {
 
@@ -71,6 +73,29 @@ namespace Agility\HTTP;
 
 		function __set($key, $value) {
 			$this->add($key, $value);
+		}
+
+		function __isset($key) {
+			return $_SESSION[$key];
+		}
+
+		/* Serializable overrides */
+		function serialize() {
+			return serialize($this->_attributes);
+		}
+
+		function unserialize($attributes) {
+			$this->_attributes = unserialize($attributes);
+		}
+
+		/* JsonSerializable override */
+		function jsonSerialize() {
+			return $this->_attributes;
+		}
+
+		/* var_dump override */
+		function __debugInfo() {
+			return $this->_attributes;
 		}
 
 	}
