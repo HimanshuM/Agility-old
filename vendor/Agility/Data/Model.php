@@ -319,6 +319,7 @@ use Agility\Extensions\String\Inflect;
 
 			$segments = explode("\\", $this->_class);
 			return Inflect::pluralize(array_pop($segments));
+
 		}
 
 	}
