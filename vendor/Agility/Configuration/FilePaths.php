@@ -10,6 +10,8 @@ namespace Agility\Configuration;
 		public $modelsDir;
 		public $pluginsDir;
 		public $viewsDir;
+		public $jsDir;
+		public $cssDir;
 
 		public $appFile;
 		public $dbFileJson;

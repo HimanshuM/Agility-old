@@ -5,21 +5,44 @@ namespace Agility\HTTP\Render;
 	class View {
 
 		public $title;
-		public $js;
-		public $css;
+		public $js = [];
+		public $css = [];
 
 		private $_viewPath;
+		private $_jsPath;
+		private $_cssPath;
 
 		private $_layout;
 		private $_view;
 
 		private $_data;
 
-		function __construct($viewPath) {
+		function __construct($viewPath, $jsPath = null, $cssPath = null) {
 
 			if (!is_null($viewPath)) {
 				$this->_viewPath = $viewPath;
 			}
+
+			$this->_jsPath = $jsPath;
+			$this->_cssPath = $cssPath;
+
+		}
+
+		function addJs($js, $relative = true) {
+
+			if (!is_null($this->_jsPath) && $relative) {
+				$js = $this->_jsPath."/".$js;
+			}
+			$this->js[] = $js;
+
+		}
+
+		function addCss($css, $relative = true) {
+
+			if (!is_null($this->_cssPath) && $relative) {
+				$css = $this->_cssPath."/".$css;
+			}
+			$this->css[] = $css;
 
 		}
 
