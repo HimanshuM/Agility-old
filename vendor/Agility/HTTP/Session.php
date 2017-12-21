@@ -76,7 +76,7 @@ use JsonSerializable;
 		}
 
 		function __isset($key) {
-			return $_SESSION[$key];
+			return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
 		}
 
 		/* Serializable overrides */
