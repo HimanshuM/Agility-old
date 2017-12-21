@@ -11,6 +11,7 @@ use Agility\Data\Query\Query;
 use Agility\Data\Query\RawQuery;
 use Agility\Data\Query\WhereClause;
 use Agility\Extensions\String\Str;
+use Agility\Extensions\String\Inflect;
 
 	class Model implements Iterator, Serializable, JsonSerializable {
 
@@ -317,7 +318,7 @@ use Agility\Extensions\String\Str;
 		private function getTableNameFromQualifiedClassName() {
 
 			$segments = explode("\\", $this->_class);
-			return array_pop($segments);
+			return Inflect::pluralize(array_pop($segments));
 		}
 
 	}
