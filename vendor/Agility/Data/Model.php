@@ -35,7 +35,7 @@ use Agility\Extensions\String\Inflect;
 
 		private $_pointer;
 
-		function __construct($empty = false) {
+		function __construct() {
 
 			$this->_dbInitObj = Initializer::getSharedInstance();
 
@@ -45,9 +45,7 @@ use Agility\Extensions\String\Inflect;
 			$this->_isDirty = false;
 			$this->_freshObject = true;
 
-			if (!$empty) {
-				$this->initialize();
-			}
+			$this->initialize();
 
 		}
 
@@ -63,7 +61,7 @@ use Agility\Extensions\String\Inflect;
 		}
 
 		static function findMany($ids) {
-			return static::findBy((new static(true))->primaryKey, $ids);
+			return static::findBy((new static())->primaryKey, $ids);
 		}
 
 		static function findBy($column, $value) {
@@ -72,7 +70,7 @@ use Agility\Extensions\String\Inflect;
 
 		static function where($clause) {
 
-			$res = new static(true);
+			$res = new static();
 
 			$query = $res->newQuery();
 			$query->where = [];
@@ -95,13 +93,33 @@ use Agility\Extensions\String\Inflect;
 
 		}
 
+		static function all() {
+
+			$res = new static();
+
+			$query = $res->newQuery();
+			$results = [];
+			$collections = $res->getConnector()->query($query);
+			foreach ($collections as $collection) {
+
+				$res = new static;
+				$res->fillAttributes($collection);
+				$res->_isDirty = false;
+				$results[] = $res;
+
+			}
+
+			return $results;
+
+		}
+
 		static function query($queryString, $params = []) {
 
 			if (!is_string($queryString)) {
 				return false;
 			}
 
-			$res = new static(true);
+			$res = new static();
 			$query = $res->newQuery();
 			$query->rawQuery = new RawQuery($queryString);
 
