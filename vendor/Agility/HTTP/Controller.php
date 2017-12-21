@@ -102,7 +102,9 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			}
 
-			$this->_actionRendered = true;
+			if ($this->_actionRendered) {
+				return;
+			}
 
 			$view = new Render\View($this->viewPath, $this->jsPath, $this->cssPath);
 

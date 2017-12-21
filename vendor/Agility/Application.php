@@ -140,8 +140,8 @@ use Agility\Configuration\Settings;
 			$this->filePaths->modelsDir = $this->filePaths->appDir."/models";
 			$this->filePaths->pluginsDir = $this->applicationDir."/plugins";
 			$this->filePaths->viewsDir = $this->filePaths->appDir."/views";
-			$this->filePaths->jsDir = $this->filePaths->appDir."/scripts";
-			$this->filePaths->cssDir = $this->filePaths->appDir."/stylesheets";
+			$this->filePaths->jsDir = /*$this->filePaths->appDir.*/"/scripts";
+			$this->filePaths->cssDir = /*$this->filePaths->appDir.*/"/stylesheets";
 
 			$this->filePaths->appFile = $this->filePaths->configDir."/app.php";
 			$this->filePaths->dbFileJson = $this->filePaths->configDir."/db.json";
