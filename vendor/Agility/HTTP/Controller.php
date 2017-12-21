@@ -32,7 +32,13 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->response = new Response;
 
-			$this->_class = (new \ReflectionClass($this))->getShortName();
+			$qualifiedClassName = get_called_class();
+			if (strpos($qualifiedClassName, "App\\Controllers") !== false) {
+				$this->_class = substr($qualifiedClassName, strlen("App\\Controllers\\"));
+			}
+			else {
+				$this->_class = (new \ReflectionClass($this))->getShortName();
+			}
 
 		}
 
