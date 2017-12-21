@@ -96,9 +96,10 @@ use Agility\Extensions\String\Inflect;
 		static function all() {
 
 			$res = new static();
-
 			$query = $res->newQuery();
+
 			$results = [];
+
 			$collections = $res->getConnector()->query($query);
 			foreach ($collections as $collection) {
 
