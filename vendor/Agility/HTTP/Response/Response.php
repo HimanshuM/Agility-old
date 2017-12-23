@@ -115,13 +115,15 @@ namespace Agility\HTTP\Response;
 
 				header('Content-Description: File Transfer');
 				header('Content-Type: application/octet-stream');
-				header("Content-disposition: attachment; filename='".$this->_downloadFile."'");
+				header("Content-disposition: attachment; filename='".$this->getDownloadFilename()."'");
 				header('Expires: 0');
 				header('Cache-Control: must-revalidate');
 				header('Pragma: public');
 
 				header("Content-length: ".filesize($this->_downloadFile));
 				readfile($this->_downloadFile);
+
+				exit;
 
 			}
 			else {
@@ -172,6 +174,13 @@ namespace Agility\HTTP\Response;
 				}
 
 			}
+
+		}
+
+		private function getDownloadFilename() {
+
+			$segments = explode("/", $this->_downloadFile);
+			return array_pop($segments);
 
 		}
 

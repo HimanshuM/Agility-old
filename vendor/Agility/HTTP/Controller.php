@@ -2,6 +2,7 @@
 
 namespace Agility\HTTP;
 
+use Exception;
 use Agility\Application;
 use Agility\HTTP\Response\Response;
 use Agility\HTTP\Mime\MimeTypes;
@@ -157,17 +158,19 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		private function setActionSubscribers($trigger) {
 
-			if (func_num_args() < 3) {
+			$subscribersInfo = func_get_arg(1);
+
+			if (count($subscribersInfo) < 2) {
 				throw new Exception("Too few arguements supplied to ".$trigger."Action(), 2 expected.", 1);
 			}
 
-			$action = func_get_arg(1);
+			$action = $subscribersInfo[0];
 
-			if (func_num_args() == 3) {
-				$subscribers = func_get_arg(2);
+			if (count($subscribersInfo) == 2) {
+				$subscribers = $subscribersInfo[1];
 			}
 			else {
-				$subscribers = array_slice(func_get_args(), 2);
+				$subscribers = array_slice($subscribersInfo, 1);
 			}
 
 			if($trigger == "before") {

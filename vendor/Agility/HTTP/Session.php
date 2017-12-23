@@ -2,6 +2,7 @@
 
 namespace Agility\HTTP;
 
+use Exception;
 use JsonSerializable;
 
 	class Session implements JsonSerializable {

@@ -290,7 +290,7 @@ use Exception;
 
 			if (!empty($childResources)) {
 
-				$builder = new RouteBuilder($this->getParameterizedScopedPath($route));
+				$builder = new RouteBuilder($this->getParameterizedScopedPath($route), $this->_baseNamespace);
 				($childResources->bindTo($builder))();
 				$this->routes = array_merge($this->routes, $builder->routes);
 
