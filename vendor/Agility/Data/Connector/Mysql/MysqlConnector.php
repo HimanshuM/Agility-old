@@ -40,9 +40,9 @@ use Agility\Logging\Logger;
 
 		function query(\Agility\Data\Query\Query $query) {
 
-			if (!empty($query->rawQuery) && !empty($query->rawQuery->query)) {
+			if (!empty($query->rawQuery) && !empty($query->rawQuery->queryString)) {
 
-				$query = $query->rawQuery;
+				$rawQuery = $query->rawQuery->queryString;
 				$params = $query->rawQuery->params ?? null;
 
 			}
@@ -68,9 +68,13 @@ use Agility\Logging\Logger;
 		function insertAndGetId(\Agility\Data\Query\Query $query) {
 
 			list($rawQuery, $params) = (new MysqlQueryCompiler($query))->compileInsert();
-			if ($this->runQuery($rawQuery, $params) === true) {
+			$stmt = $this->runQuery($rawQuery, $params);
+			$result = $stmt->errorInfo();
+			if (intval($result[0]) == 0) {
 				return $this->connection->lastInsertId();
 			}
+
+			throw new Exception($stmt->errorCode(), 1);
 
 		}
 
