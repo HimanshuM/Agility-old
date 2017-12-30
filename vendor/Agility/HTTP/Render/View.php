@@ -2,11 +2,15 @@
 
 namespace Agility\HTTP\Render;
 
+use Agility\HTTP\Session;
+
 	class View {
 
 		public $title;
 		public $js = [];
 		public $css = [];
+
+		protected $session;
 
 		private $_viewPath;
 		private $_jsPath;
@@ -18,6 +22,8 @@ namespace Agility\HTTP\Render;
 		private $_data;
 
 		function __construct($viewPath, $jsPath = null, $cssPath = null) {
+
+			$this->session = Session::getSharedInstance();
 
 			if (!is_null($viewPath)) {
 				$this->_viewPath = $viewPath;
