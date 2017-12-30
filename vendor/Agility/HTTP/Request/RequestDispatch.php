@@ -50,6 +50,8 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 			array_unshift($args);
 			$method = "GET";
 
+			$_SERVER["REMOTE_ADDR"] = "127.0.0.1";
+
 			$this->_acceptHeader = "text/html";
 
 			$this->resolveRequest($args, $method, null);
