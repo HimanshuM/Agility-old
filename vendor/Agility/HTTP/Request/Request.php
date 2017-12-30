@@ -12,6 +12,8 @@ use Agility\HTTP\Routing\Route;
 		public $method;
 		public $requestUri;
 
+		public $ip;
+
 		public $header;
 
 		public $preferredMimeType;
@@ -21,6 +23,8 @@ use Agility\HTTP\Routing\Route;
 
 			$this->method = $method;
 			$this->requestUri = $requestUri;
+
+			$this->getRequestIP();
 
 			$this->compileAcceptHeader($acceptHeader);
 
@@ -49,6 +53,19 @@ use Agility\HTTP\Routing\Route;
 
 			foreach ($routeParams as $key => $value) {
 				$this->params->get[$key] = $value;
+			}
+
+		}
+
+		private function getRequestIP() {
+
+			$headers = ['REMOTE_ADDR', 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED'];
+			foreach ($headers as $header) {
+
+				if (!empty($_SERVER[$header]) && filter_var($_SERVER[$header], FILTER_VALIDATE_IP) !== false) {
+					$this->ip = $_SERVER[$header];
+				}
+
 			}
 
 		}
