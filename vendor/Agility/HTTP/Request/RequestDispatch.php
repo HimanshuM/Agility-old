@@ -9,6 +9,7 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 	class RequestDispatch {
 
 		private $_acceptHeader;
+		private $_cli;
 
 		private static $_sharedInstance;
 
@@ -46,6 +47,8 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 
 		private function parseCliRequest() {
 
+			$this->_cli = true;
+
 			$args = $_SERVER["argv"];
 			array_unshift($args);
 			$method = "GET";
@@ -59,6 +62,8 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 		}
 
 		private function parseHttpRequest() {
+
+			$this->_cli = false;
 
 			$method = $_SERVER["REQUEST_METHOD"];
 			$uri = $_SERVER["REQUEST_URI"];
@@ -86,9 +91,84 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 
 			}
 
+			if ($this->verifyRouteConstraints($route, $request) === false) {
+
+				$this->handle(500, $method);
+				return;
+
+			}
+
 			$request->loadRequestParameters($method, $route->params);
 
 			$this->invokeRequestHandler($route, $request);
+
+		}
+
+		private verifyRouteConstraints($route, $request) {
+
+			if (!empty($route->constraints["cli_only"]) && $route->constraints["cli_only"] == true) {
+
+				if ($this->_cli != true) {
+					return false;
+				}
+
+			}
+
+			return $this->verifyIPConstraint($route, $request);
+
+		}
+
+		private function verifyIPConstraint($route, $request) {
+
+			if (!empty($route->constraints["blocked_ip"])) {
+
+				if (is_string($route->constraints["blocked_ip"])) {
+
+					if ($route->constraints["blocked_ip"] == $request->ip) {
+						return false;
+					}
+
+				}
+				else if (is_array($route->constraints["blocked_ip"])) {
+
+					foreach ($route->constraints["blocked_ip"] as $blocked_ip) {
+
+						if ($blocked_ip == $request->ip) {
+							return false;
+						}
+
+					}
+
+				}
+
+			}
+
+			if (!empty($route->constraints["allowed_ip"])) {
+
+				if (is_string($route->constraints["allowed_ip"])) {
+
+					if ($route->constraints["allowed_ip"] != $request->ip) {
+						return false;
+					}
+
+				}
+				else if (is_array($route->constraints["allowed_ip"])) {
+
+					foreach ($route->constraints["allowed_ip"] as $allowed_ip) {
+
+						if ($allowed_ip == $request->ip) {
+							return true;
+						}
+
+					}
+
+					return false;
+
+				}
+
+			}
+
+			return true;
 
 		}
 
