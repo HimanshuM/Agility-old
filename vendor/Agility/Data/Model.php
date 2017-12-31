@@ -261,7 +261,10 @@ use Agility\Extensions\String\Inflect;
 		}
 
 		function unserialize($prototype) {
-			$this->_prototype->unserialize();
+
+			$this->_prototype = new Collection;
+			$this->_prototype->unserialize($prototype);
+
 		}
 
 		/* JsonSerializable override */
