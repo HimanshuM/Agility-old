@@ -135,13 +135,13 @@ namespace Agility\Data\Connector\Mysql;
 
 					$order = [];
 					foreach ($this->query->sequence as $ordering) {
-						$order[] = $ordering->attribute." ".$ordering->order;
+						$order[] = $ordering->attribute." ".($ordering->ascending ? "ASC" : "DESC");
 					}
 					$order = implode(", ", $order);
 
 				}
 				else {
-					$order = $this->query->sequence->attribute." ".$this->query->sequence->order;
+					$order = $this->query->sequence->attribute." ".($this->query->sequence->ascending ? "ASC" : "DESC");
 				}
 
 				$order = "ORDER BY ".$order;

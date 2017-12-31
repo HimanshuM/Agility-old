@@ -60,15 +60,15 @@ use Agility\Extensions\String\Inflect;
 
 		}
 
-		static function findMany($ids) {
-			return static::findBy((new static())->primaryKey, $ids);
+		static function findMany($ids, $ordering = []) {
+			return static::findBy((new static())->primaryKey, $ids, $ordering);
 		}
 
-		static function findBy($column, $value) {
-			return static::where([$column => $value]);
+		static function findBy($column, $value, $ordering = []) {
+			return static::where([$column => $value], $ordering);
 		}
 
-		static function where($clause) {
+		static function where($clause, $ordering = []) {
 
 			$res = new static();
 
@@ -76,6 +76,23 @@ use Agility\Extensions\String\Inflect;
 			$query->where = [];
 			foreach ($clause as $attribute => $value) {
 				$query->where[] = new WhereClause($res->getStorageName($attribute), $value);
+			}
+
+			if (empty($ordering)) {
+				$query->sequence[] = new Ordering("id");
+			}
+			else {
+
+				foreach ($ordering as $sequence) {
+
+					if (!($sequence instanceof Ordering)) {
+						throw new Exception("Ordering should be an object of class Ordering", 1);
+					}
+
+				}
+
+				$query->sequence = $ordering;
+
 			}
 
 			$results = [];
@@ -97,6 +114,8 @@ use Agility\Extensions\String\Inflect;
 
 			$res = new static();
 			$query = $res->newQuery();
+
+			$query->sequence[] = new Ordering("id");
 
 			$results = [];
 

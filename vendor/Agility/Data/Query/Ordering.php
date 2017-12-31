@@ -5,12 +5,12 @@ namespace Agility\Data\Query;
 	class Ordering {
 
 		public $attribute;
-		public $order; /* 0 => ASC, 1 => DESC */
+		public $ascending;
 
-		function __construct($attribute, $order = 0) {
+		function __construct($attribute, $ascending = true) {
 
 			$this->attribute = $attribute;
-			$this->order = $order;
+			$this->ascending = $ascending;
 
 		}
 
