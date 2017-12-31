@@ -104,7 +104,7 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 
 		}
 
-		private verifyRouteConstraints($route, $request) {
+		private function verifyRouteConstraints($route, $request) {
 
 			if (!empty($route->constraints["cli_only"]) && $route->constraints["cli_only"] == true) {
 

@@ -55,7 +55,7 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->layout = "shared/base";
 
-			$this->session = new Session;
+			$this->session = Session::getSharedInstance();
 
 			$this->sessionName = false;
 			$this->sessionOptions = false;

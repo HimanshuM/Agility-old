@@ -7,17 +7,21 @@ use JsonSerializable;
 
 	class Session implements JsonSerializable {
 
-		function __construct($name = false) {
+		private $_initialized;
 
-			if (!empty($name)) {
+		private static $_sharedInstance;
 
-				if (!is_string($name)) {
-					throw new Exception("Invalid argument supplied to Session::constructor", 1);
-				}
+		private function __construct($name = false) {
+			$this->_initialized = false;
+		}
 
-				session_name($name);
+		static function getSharedInstance() {
 
+			if (is_null(self::$_sharedInstance)) {
+				self::$_sharedInstance = new self;
 			}
+
+			return self::$_sharedInstance;
 
 		}
 
@@ -40,6 +44,12 @@ use JsonSerializable;
 
 			}
 
+			$this->_initialized = true;
+
+		}
+
+		function initialized() {
+			return $this->_initialized;
 		}
 
 		function name() {
@@ -82,21 +92,21 @@ use JsonSerializable;
 
 		/* Serializable overrides */
 		function serialize() {
-			return serialize($this->_attributes);
+			return serialize($_SESSION);
 		}
 
 		function unserialize($attributes) {
-			$this->_attributes = unserialize($attributes);
+			$_SESSION = unserialize($attributes);
 		}
 
 		/* JsonSerializable override */
 		function jsonSerialize() {
-			return $this->_attributes;
+			return $_SESSION;
 		}
 
 		/* var_dump override */
 		function __debugInfo() {
-			return $this->_attributes;
+			return $_SESSION;
 		}
 
 	}
