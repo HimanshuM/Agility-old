@@ -144,7 +144,7 @@ namespace Agility\Data\Connector\Mysql;
 					$order = $this->query->sequence->attribute." ".($this->query->sequence->ascending ? "ASC" : "DESC");
 				}
 
-				$order = "ORDER BY ".$order;
+				$order = " ORDER BY ".$order;
 
 			}
 			else {
@@ -160,7 +160,7 @@ namespace Agility\Data\Connector\Mysql;
 			$limit;
 			if (!empty($this->query->limit)) {
 
-				$limit = "LIMIT ".$this->query->limit[0];
+				$limit = " LIMIT ".$this->query->limit[0];
 				if (isset($this->query->limit[1])) {
 					$limit .= ", ".$this->query->limit[1];
 				}
