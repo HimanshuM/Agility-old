@@ -6,6 +6,7 @@ use Iterator;
 use Serializable;
 use JsonSerializable;
 use Agility\Exception\PropertyNotFoundException;
+use Agility\Extensions\String\Str;
 
 	class Collection implements Iterator, Serializable, JsonSerializable {
 
@@ -32,7 +33,14 @@ use Agility\Exception\PropertyNotFoundException;
 		}
 
 		function __set($key, $value) {
+
+			$key = $this->getStorageName($key);
 			$this->_attributes[$key] = $value;
+
+		}
+
+		function __isset($key) {
+			return isset($this->_attributes[$key]) ? $this->_attributes[$key] : false;
 		}
 
 		function enumerate() {
@@ -77,6 +85,10 @@ use Agility\Exception\PropertyNotFoundException;
 		/* var_dump override */
 		function __debugInfo() {
 			return $this->_attributes;
+		}
+
+		private function getStorageName($attribute) {
+			return Str::snakeCase($attribute);
 		}
 
 	}

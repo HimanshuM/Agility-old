@@ -89,7 +89,7 @@ use Agility\Logging;
 				}
 				catch (\Exception $e) {
 
-					Logging\Logger::log("Database connection error: ".$connectionName." connection failed to initialze.".$e->getMessage(), Logging\Severity::Critical);
+					Logging\Logger::log("Database connection error: ".$connectionName." connection failed to initialze. ".$e->getMessage(), Logging\Severity::Critical);
 					return false;
 
 				}

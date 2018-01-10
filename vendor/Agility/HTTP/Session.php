@@ -75,7 +75,7 @@ use JsonSerializable;
 		function __get($key) {
 
 			if (!isset($_SESSION[$key])) {
-				throw new Exception($key." not found in Session", 1);
+				throw new Exception("'".$key."' not found in Session", 1);
 			}
 
 			return $_SESSION[$key];
@@ -88,6 +88,10 @@ use JsonSerializable;
 
 		function __isset($key) {
 			return isset($_SESSION[$key]) ? $_SESSION[$key] : false;
+		}
+
+		function __unset($key) {
+			unset($_SESSION[$key]);
 		}
 
 		/* Serializable overrides */

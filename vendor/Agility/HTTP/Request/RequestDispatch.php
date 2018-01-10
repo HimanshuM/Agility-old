@@ -72,15 +72,13 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 				$uri = explode("?", $uri)[0];
 			}
 
-			$this->_acceptHeader = $_SERVER["HTTP_ACCEPT"] ?? "text/html";
+			$this->_acceptHeader = $_SERVER["HTTP_ACCEPT"] ?? "*/*";
 
 			$this->resolveRequest(strtolower($method), $uri);
 
 		}
 
 		private function resolveRequest($method, $uri) {
-
-			$request = new Request($method, $uri, $this->_acceptHeader);
 
 			// echo json_encode((\Agility\HTTP\Routing\Routes::getSharedInstance())->getAllRoutes());
 
@@ -89,6 +87,13 @@ use Agility\HTTP\ErrorHandling\ErrorHandler;
 				$this->handle(404, $method);
 				return;
 
+			}
+
+			if (!empty($route->constraints["default"])) {
+				$request = new Request($method, $uri, $this->_acceptHeader, $route->constraints["default"]);
+			}
+			else {
+				$request = new Request($method, $uri, $this->_acceptHeader);
 			}
 
 			if ($this->verifyRouteConstraints($route, $request) === false) {

@@ -4,6 +4,7 @@ namespace Agility\HTTP;
 
 use Exception;
 use Agility\Application;
+use Agility\Configuration\Settings;
 use Agility\HTTP\Response\Response;
 use Agility\HTTP\Mime\MimeTypes;
 
@@ -11,6 +12,8 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		protected $applicationEnvironment;
 		protected $applicationDirectory;
+
+		protected $settings;
 
 		protected $request;
 		protected $response;
@@ -38,6 +41,8 @@ use Agility\HTTP\Mime\MimeTypes;
 
 			$this->applicationEnvironment = $app->environment;
 			$this->applicationDirectory = $app->applicationDir;
+
+			$this->settings = Settings::getSharedInstance();
 
 			$this->response = new Response;
 
@@ -100,16 +105,15 @@ use Agility\HTTP\Mime\MimeTypes;
 
 		function render($template, $data = null, $layout = true) {
 
-			if (is_null($template)) {
-
-				$this->renderCustom(MimeTypes::Html, null);
-				return;
-
-			}
-
 			if ($this->_actionRendered) {
 				return;
 			}
+
+			if (is_null($template)) {
+				return;
+			}
+
+			$template = strtolower($template);
 
 			$view = new Render\View($this->viewPath, $this->jsPath, $this->cssPath);
 
@@ -153,11 +157,17 @@ use Agility\HTTP\Mime\MimeTypes;
 		}
 
 		function render_404() {
+
+			$this->_actionRendered = true;
 			(Routing\RouteDispatch::getSharedInstance())->softRedirect(404);
+
 		}
 
 		function render_500() {
+
+			$this->_actionRendered = true;
 			(Routing\RouteDispatch::getSharedInstance())->softRedirect(500);
+
 		}
 
 		private function setActionSubscribers($trigger) {
@@ -168,7 +178,7 @@ use Agility\HTTP\Mime\MimeTypes;
 				throw new Exception("Too few arguements supplied to ".$trigger."Action(), 2 expected.", 1);
 			}
 
-			$action = $subscribersInfo[0];
+			$actions = $subscribersInfo[0];
 
 			if (count($subscribersInfo) == 2) {
 				$subscribers = $subscribersInfo[1];
@@ -176,6 +186,21 @@ use Agility\HTTP\Mime\MimeTypes;
 			else {
 				$subscribers = array_slice($subscribersInfo, 1);
 			}
+
+			if (is_array($actions)) {
+
+				foreach ($actions as $action) {
+					$this->addActionSubcribers($trigger, $action, $subscribers);
+				}
+
+			}
+			else {
+				$this->addActionSubcribers($trigger, $actions, $subscribers);
+			}
+
+		}
+
+		private function addActionSubcribers($trigger, $action, $subscribers) {
 
 			if($trigger == "before") {
 

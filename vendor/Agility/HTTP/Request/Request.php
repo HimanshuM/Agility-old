@@ -19,14 +19,14 @@ use Agility\HTTP\Routing\Route;
 		public $preferredMimeType;
 		public $acceptableMimeTypes;
 
-		function __construct($method = "", $requestUri = "", $acceptHeader = "text/html") {
+		function __construct($method = "", $requestUri = "", $acceptHeader = null, $defaultAccept = "text/html") {
 
 			$this->method = $method;
 			$this->requestUri = $requestUri;
 
 			$this->getRequestIP();
 
-			$this->compileAcceptHeader($acceptHeader);
+			$this->compileAcceptHeader($acceptHeader, $defaultAccept);
 
 			$this->params = new RequestParameters;
 
@@ -44,7 +44,17 @@ use Agility\HTTP\Routing\Route;
 
 		function loadRequestParameters($method, $routeParams = []) {
 
-			$this->params->get = $_GET ?? [];
+			if (empty($_GET)) {
+				$this->params->get = [];
+			}
+			else {
+
+				$this->params->get = array_map(function($each) {
+					return strip_tags(trim($each));
+				}, $_GET);
+
+			}
+
 			$this->params->post = $_POST ?? [];
 
 			if (in_array($method, ["put", "patch", "delete"])) {
@@ -52,7 +62,14 @@ use Agility\HTTP\Routing\Route;
 			}
 
 			foreach ($routeParams as $key => $value) {
-				$this->params->get[$key] = $value;
+				$this->params->get[$key] = strip_tags(trim($value));
+			}
+
+			if (!empty($_FILES)) {
+
+				foreach ($_FILES as $file) {
+					$this->params->files[] = $this->moveUploadedFile($file);
+				}
 			}
 
 		}
@@ -70,16 +87,16 @@ use Agility\HTTP\Routing\Route;
 
 		}
 
-		private function compileAcceptHeader($acceptHeader) {
+		private function compileAcceptHeader($acceptHeader, $defaultAccept) {
 
-			if (!empty($acceptHeader)) {
+			if (!is_null($acceptHeader)) {
 
 				$acceptableContentTypes = ContentNegotiator::buildAcceptableContentArray($acceptHeader);
 
 				if (count($acceptableContentTypes) == 1) {
 
 					if ($acceptableContentTypes[0] == "*/*") {
-						array_unshift($acceptableContentTypes, "text/html");
+						array_unshift($acceptableContentTypes, $defaultAccept);
 					}
 
 				}
@@ -96,6 +113,20 @@ use Agility\HTTP\Routing\Route;
 				$this->preferredMimeType = null;
 
 			}
+
+		}
+
+		private function moveUploadedFile($file) {
+
+			$settings = Settings::getSharedInstance();
+			if (!isset($settings->uploadPath)) {
+				$settings->uploadPath = "uploads";
+			}
+
+			$filename = getcwd()."/".trim($settings->uploadPath, "/")."/".$file["name"];
+			move_uploaded_file($file["tmp_name"], $filename);
+
+			return $filename;
 
 		}
 

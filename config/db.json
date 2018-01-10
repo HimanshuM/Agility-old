@@ -1,10 +1,10 @@
 {
-	"development": {
-		"mysql1": {
+	"development": [
+		{
 			"adapter": "mysql",
 			"database": "jaws_dev",
 			"username": "root",
 			"password": "password"
 		}
-	}
+	]
 }

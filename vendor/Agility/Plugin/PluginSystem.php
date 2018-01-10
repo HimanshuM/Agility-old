@@ -44,6 +44,14 @@ use Agility\Logging\Logger;
 
 		}
 
+		static function invokeDelayedMethods() {
+
+			foreach (self::$plugins as $plugin) {
+				$plugin->invokeDelayedMethod();
+			}
+
+		}
+
 		private static function setupPlugin($pluginName) {
 
 			if (!class_exists($pluginName, false) || get_parent_class($pluginName) !== "Agility\Plugin\Plugin") {

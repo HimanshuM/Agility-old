@@ -4,6 +4,7 @@ namespace Agility\HTTP\Routing;
 
 use Closure;
 use Exception;
+use Agility\Extensions\String\Inflect;
 
 	class RouteBuilder {
 
@@ -273,7 +274,7 @@ use Exception;
 				$path = "/";
 			}
 			$routeParams = $this->getParamsFromPath($path);
-			$path = $this->normalizeParameterizedPath($path);
+			$parameterizedPath = $this->normalizeParameterizedPath($path);
 
 			$handler = $this->prependNamespace($handler);
 			if (strpos($handler, "#") === false) {
@@ -284,7 +285,7 @@ use Exception;
 				$childResources = null;
 			}
 
-			$route = $this->constructRoute($method, $path, $handler, $pathName, $constraints, $routeParams);
+			$route = $this->constructRoute($method, $parameterizedPath, $handler, $pathName, $constraints, $routeParams);
 
 			$this->routes[] = $route;
 
@@ -312,6 +313,10 @@ use Exception;
 
 			foreach ($parameters as $param) {
 
+				if (is_null($param)) {
+					continue;
+				}
+
 				if (is_string($param)) {
 
 					if ($handler == ""){
@@ -335,7 +340,7 @@ use Exception;
 				$handler = $path;
 			}
 
-			return [$path, $handler, $constraints, $pathName, $childResources];
+			return [$path, ucfirst($handler), $constraints, $pathName, $childResources];
 
 		}
 

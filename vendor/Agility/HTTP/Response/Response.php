@@ -2,6 +2,8 @@
 
 namespace Agility\HTTP\Response;
 
+use Exception;
+
 	class Response {
 
 		const Http200 = 200;

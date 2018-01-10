@@ -158,12 +158,41 @@ use Agility\Extensions\String\Inflect;
 
 		}
 
+		static function exec($queryString, $params = []) {
+
+			if (!is_string($queryString)) {
+				return false;
+			}
+
+			$res = new static();
+			$query = $res->newQuery();
+			$query->rawQuery = new RawQuery($queryString);
+
+			if (func_num_args() > 1) {
+
+				if (is_array($params)) {
+					$query->rawQuery->params = $params;
+				}
+				else {
+					$query->rawQuery->params = array_slice(func_get_args(), 1);
+				}
+
+			}
+
+			return $res->getConnector()->exec($query);
+
+		}
+
 		function __get($attribute) {
-			return $this->getAttribute($attribute);
+			return $this->getAttribute($attribute, false);
 		}
 
 		function __set($attribute, $value) {
-			$this->setAttribute($attribute, $value);
+			$this->setAttribute($attribute, $value, false);
+		}
+
+		function __isset($attribute) {
+			return isset($this->_prototype->$attribute) ? $this->_prototype->$attribute : false;
 		}
 
 		function save() {
@@ -277,6 +306,23 @@ use Agility\Extensions\String\Inflect;
 			return $this->_prototype->enumerate();
 		}
 
+		/*  Touch timestamps getter and setters */
+		protected function getCreatedAtAttribute($createdAt) {
+			return ($this->autoTouchTimestampsUpdate ? $createdAt->format("Y-m-d H:i:s") : $createdAt);
+		}
+
+		protected function setCreatedAtAttribute($createdAt) {
+			return ($this->autoTouchTimestampsUpdate ? date_create_from_format("Y-m-d H:i:s", $createdAt) : $createdAt);
+		}
+
+		protected function getUpdatedAtAttribute($updatedAt) {
+			return ($this->autoTouchTimestampsUpdate ? $updatedAt->format("Y-m-d H:i:s") : $updatedAt);
+		}
+
+		protected function setUpdatedAtAttribute($updatedAt) {
+			return ($this->autoTouchTimestampsUpdate ? date_create_from_format("Y-m-d H:i:s", $updatedAt) : $updatedAt);
+		}
+
 		private function initialize() {
 
 			$this->_class = get_called_class();
@@ -314,23 +360,34 @@ use Agility\Extensions\String\Inflect;
 
 		}
 
-		private function getAttribute($attribute) {
+		private function getAttribute($attribute, $format = true) {
 
-			$accessor = "get".ucfirst($attribute)."Attribute";
 			$attribute = $this->getStorageName($attribute);
+
+			if (!$format) {
+				return $this->_prototype->$attribute;
+			}
+
+			$accessor = "get".Str::camelCase($attribute)."Attribute";
 			if (method_exists($this, $accessor)) {
 				return $this->$accessor($this->_prototype->$attribute);
 			}
+
 			return $this->_prototype->$attribute;
 
 		}
 
-		private function setAttribute($attribute, $value) {
+		private function setAttribute($attribute, $value, $format = true) {
 
-			$accessor = "set".ucfirst($attribute)."Attribute";
 			$attribute = $this->getStorageName($attribute);
-			if (method_exists($this, $accessor)) {
-				$value = $this->$accessor($value);
+
+			if ($format) {
+
+				$accessor = "set".Str::camelCase($attribute)."Attribute";
+				if (method_exists($this, $accessor)) {
+					$value = $this->$accessor($value);
+				}
+
 			}
 			$this->_prototype->$attribute = $value;
 

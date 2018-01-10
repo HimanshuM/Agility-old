@@ -41,6 +41,9 @@ use Agility\HTTP\Mime\MimeTypes;
 				$this->response->setStatus(404);
 			}
 
+			$this->response->respond();
+			$this->render(null);
+
 		}
 
 		function render_500() {
@@ -65,6 +68,9 @@ use Agility\HTTP\Mime\MimeTypes;
 			else {
 				$this->response->setStatus(500);
 			}
+
+			$this->response->respond();
+			$this->render(null);
 
 		}
 

@@ -63,7 +63,11 @@ use Agility\Configuration\Settings;
 		}
 
 		function run() {
+
+			Plugin\PluginSystem::invokeDelayedMethods();
+
 			(HTTP\Request\RequestDispatch::getSharedInstance())->processRequest();
+
 		}
 
 		protected function initialize() {
@@ -139,7 +143,7 @@ use Agility\Configuration\Settings;
 			$this->filePaths->controllersDir = $this->filePaths->appDir."/controllers";
 			$this->filePaths->modelsDir = $this->filePaths->appDir."/models";
 			$this->filePaths->pluginsDir = $this->applicationDir."/plugins";
-			$this->filePaths->viewsDir = $this->filePaths->appDir."/views";
+			$this->filePaths->viewsDir = $this->filePaths->appDir."/Views";
 			$this->filePaths->jsDir = /*$this->filePaths->appDir.*/"/scripts";
 			$this->filePaths->cssDir = /*$this->filePaths->appDir.*/"/stylesheets";
 

@@ -56,6 +56,18 @@ use Agility\Logging\Logger;
 
 		function exec(\Agility\Data\Query\Query $query) {
 
+			if (!empty($query->rawQuery) && !empty($query->rawQuery->queryString)) {
+
+				$rawQuery = $query->rawQuery->queryString;
+				$params = $query->rawQuery->params ?? null;
+
+				return $this->runQuery($rawQuery, $params, $query->instanceOf)->rowCount();
+
+			}
+			else {
+				throw new Exception("Query not specified to execute", 1);
+			}
+
 		}
 
 		function insert(\Agility\Data\Query\Query $query) {

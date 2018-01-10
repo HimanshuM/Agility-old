@@ -2,6 +2,8 @@
 
 namespace Agility\Configuration;
 
+use Exception;
+
 	class Settings {
 
 		private $data;
@@ -33,6 +35,14 @@ namespace Agility\Configuration;
 
 		function __set($key, $value) {
 			$this->data[$key] = $value;
+		}
+
+		function __isset($key) {
+			return isset($this->data[$key]) ? $this->data[$key] : false;
+		}
+
+		function __unset($key) {
+			unset($this->data[$key]);
 		}
 
 	}

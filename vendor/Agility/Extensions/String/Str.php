@@ -19,7 +19,15 @@ namespace Agility\Extensions\String;
 
 		// pascalCase
 		static function pascalCase($string) {
-			return $string;
+
+			$matches = [];
+			preg_match_all("/(_[A-Z])/", $string, $matches);
+			foreach ($matches[0] as $match) {
+				$string = str_replace($match, strtoupper($match[1]), $string);
+			}
+
+			return lcfirst($string);
+
 		}
 
 		// snake_case

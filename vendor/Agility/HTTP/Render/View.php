@@ -74,12 +74,22 @@ use Agility\HTTP\Session;
 
 			$this->prepareData($data);
 
-			$data = $this->renderView();
+			$data = $this->renderView($this->_view, $this->_data);
 			if (!is_null($this->_layout)) {
 				$this->renderLayout($data);
 			}
 
 			return $this->_data;
+
+		}
+
+		function renderPartial($partialView, $data = null) {
+
+			$this->prepareData($data);
+
+			$data = $this->renderView($this->_viewPath."/".$partialView.".php", $data);
+
+			echo $data;
 
 		}
 
@@ -100,16 +110,16 @@ use Agility\HTTP\Session;
 
 		}
 
-		private function renderView() {
+		private function renderView($partial, $data) {
 
 			ob_start();
 
-			if (!is_null($this->_data)) {
-				extract($this->_data);
+			if (!is_null($data)) {
+				extract($data);
 			}
 			extract(["view" => $this]);
 
-			require_once $this->_view;
+			require_once $partial;
 
 			$data = ob_get_contents();
 			ob_end_clean();
